@@ -1,0 +1,10 @@
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\Progetto Dell'Anno 2024-25.exe.config
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\Progetto Dell'Anno 2024-25.exe
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\Progetto Dell'Anno 2024-25.pdb
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.csproj.AssemblyReference.cache
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto_Dell_Anno_2024_25.Properties.Resources.resources
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.csproj.GenerateResource.cache
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.csproj.CoreCompileInputs.cache
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.exe
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.pdb
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto_Dell_Anno_2024_25.DashBoard.resources

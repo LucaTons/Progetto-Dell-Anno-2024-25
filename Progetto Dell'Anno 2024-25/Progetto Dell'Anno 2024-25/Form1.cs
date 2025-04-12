@@ -10,11 +10,31 @@ using System.Windows.Forms;
 
 namespace Progetto_Dell_Anno_2024_25
 {
-    public partial class Form1 : Form
+    public partial class DashBoard : Form
     {
-        public Form1()
+        public DashBoard()
         {
             InitializeComponent();
+        }
+
+        private void aggiungitoolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            tabControlCategorie.Visible = true;
+        }
+
+        private void visualizzaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tabControlCategorie.Visible = false;
+        }
+
+        private void reportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tabControlCategorie.Visible = false;
+        }
+
+        private void impostazioniToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tabControlCategorie.Visible = false;
         }
     }
 }
