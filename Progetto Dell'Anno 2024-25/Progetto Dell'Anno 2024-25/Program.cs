@@ -16,7 +16,7 @@ namespace Progetto_Dell_Anno_2024_25
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DashBoard());
+            Application.Run(new Home());
         }
     }
 }

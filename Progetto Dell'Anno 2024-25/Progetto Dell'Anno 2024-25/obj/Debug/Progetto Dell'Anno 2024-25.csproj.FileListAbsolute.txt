@@ -8,3 +8,4 @@ C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Prog
 C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.exe
 C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.pdb
 C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto_Dell_Anno_2024_25.DashBoard.resources
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto_Dell_Anno_2024_25.Home.resources
