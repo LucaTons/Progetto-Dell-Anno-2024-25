@@ -122,6 +122,7 @@ namespace Progetto_Dell_Anno_2024_25
                     label_CambiaTema.ForeColor = Color.White;
                     label_Visualizza.ForeColor = Color.White;
                     label_Aggiungi.ForeColor = Color.White;
+                    label_Report.ForeColor = Color.White;
                 }   
             }
             else
@@ -138,6 +139,7 @@ namespace Progetto_Dell_Anno_2024_25
                     label_CambiaTema.ForeColor = Color.Black;
                     label_Visualizza.ForeColor = Color.Black;
                     label_Aggiungi.ForeColor = Color.Black;
+                    label_Report.ForeColor = Color.Black;
                 }
             }
         }
