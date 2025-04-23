@@ -40,6 +40,7 @@
             this.label_Visualizza = new System.Windows.Forms.Label();
             this.Visualizza_Spese = new System.Windows.Forms.ListView();
             this.tabPageReport = new System.Windows.Forms.TabPage();
+            this.button_ScaricaReport = new System.Windows.Forms.Button();
             this.label_Report = new System.Windows.Forms.Label();
             this.comboBox_Mesi = new System.Windows.Forms.ComboBox();
             this.tabPageImpostazioni = new System.Windows.Forms.TabPage();
@@ -48,7 +49,7 @@
             this.comboBox_CambiaTema = new System.Windows.Forms.ComboBox();
             this.textBox_Budget = new System.Windows.Forms.TextBox();
             this.button_ImpostaBudget = new System.Windows.Forms.Button();
-            this.button_ScaricaReport = new System.Windows.Forms.Button();
+            this.button_OrdinaPerData = new System.Windows.Forms.Button();
             this.tabControlOperazioni.SuspendLayout();
             this.tabPageAggiungi.SuspendLayout();
             this.tabPageVisualizza.SuspendLayout();
@@ -121,12 +122,13 @@
             this.button_Aggiungi.Name = "button_Aggiungi";
             this.button_Aggiungi.Size = new System.Drawing.Size(250, 30);
             this.button_Aggiungi.TabIndex = 4;
-            this.button_Aggiungi.Text = "Aggiungi";
+            this.button_Aggiungi.Text = "AGGIUNGI";
             this.button_Aggiungi.UseVisualStyleBackColor = true;
             this.button_Aggiungi.Click += new System.EventHandler(this.button_AggiungiSpesa_Click);
             // 
             // tabPageVisualizza
             // 
+            this.tabPageVisualizza.Controls.Add(this.button_OrdinaPerData);
             this.tabPageVisualizza.Controls.Add(this.label_Visualizza);
             this.tabPageVisualizza.Controls.Add(this.Visualizza_Spese);
             this.tabPageVisualizza.Location = new System.Drawing.Point(4, 25);
@@ -169,6 +171,16 @@
             this.tabPageReport.TabIndex = 2;
             this.tabPageReport.Text = "Report Mensile";
             this.tabPageReport.UseVisualStyleBackColor = true;
+            // 
+            // button_ScaricaReport
+            // 
+            this.button_ScaricaReport.Location = new System.Drawing.Point(938, 333);
+            this.button_ScaricaReport.Name = "button_ScaricaReport";
+            this.button_ScaricaReport.Size = new System.Drawing.Size(144, 23);
+            this.button_ScaricaReport.TabIndex = 6;
+            this.button_ScaricaReport.Text = "SCARICA REPORT";
+            this.button_ScaricaReport.UseVisualStyleBackColor = true;
+            this.button_ScaricaReport.Click += new System.EventHandler(this.button_ScaricaReport_Click);
             // 
             // label_Report
             // 
@@ -245,18 +257,19 @@
             this.button_ImpostaBudget.Name = "button_ImpostaBudget";
             this.button_ImpostaBudget.Size = new System.Drawing.Size(100, 54);
             this.button_ImpostaBudget.TabIndex = 0;
-            this.button_ImpostaBudget.Text = "Imposta Budget";
+            this.button_ImpostaBudget.Text = "IMPOSTA BUDGET";
             this.button_ImpostaBudget.UseVisualStyleBackColor = true;
             this.button_ImpostaBudget.Click += new System.EventHandler(this.button_ImpostaBudget_Click);
             // 
-            // button_ScaricaReport
+            // button_OrdinaPerData
             // 
-            this.button_ScaricaReport.Location = new System.Drawing.Point(938, 333);
-            this.button_ScaricaReport.Name = "button_ScaricaReport";
-            this.button_ScaricaReport.Size = new System.Drawing.Size(144, 23);
-            this.button_ScaricaReport.TabIndex = 6;
-            this.button_ScaricaReport.Text = "SCARICA REPORT";
-            this.button_ScaricaReport.UseVisualStyleBackColor = true;
+            this.button_OrdinaPerData.Location = new System.Drawing.Point(307, 316);
+            this.button_OrdinaPerData.Name = "button_OrdinaPerData";
+            this.button_OrdinaPerData.Size = new System.Drawing.Size(153, 45);
+            this.button_OrdinaPerData.TabIndex = 6;
+            this.button_OrdinaPerData.Text = "ORDINA PER DATA";
+            this.button_OrdinaPerData.UseVisualStyleBackColor = true;
+            this.button_OrdinaPerData.Click += new System.EventHandler(this.button_OrdinaPerData_Click);
             // 
             // DashBoard
             // 
@@ -302,5 +315,6 @@
         private System.Windows.Forms.Label label_Report;
         private System.Windows.Forms.ComboBox comboBox_Mesi;
         private System.Windows.Forms.Button button_ScaricaReport;
+        private System.Windows.Forms.Button button_OrdinaPerData;
     }
 }
