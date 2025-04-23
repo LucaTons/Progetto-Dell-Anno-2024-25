@@ -11,6 +11,7 @@ namespace Progetto_Dell_Anno_2024_25
     {
         private List<Spesa> listaSpese = new List<Spesa>();
         private decimal budgetMensile;
+        private decimal speseMensili;
 
         public DashBoard()
         {
@@ -18,6 +19,7 @@ namespace Progetto_Dell_Anno_2024_25
             InizializzaCategorie();
             ImpostaControlli();
             InizializzaListView();
+            speseMensili = 0;
         }
 
         private void button_AggiungiSpesa_Click(object sender, EventArgs e)
@@ -34,16 +36,37 @@ namespace Progetto_Dell_Anno_2024_25
                 return;
             }
 
+            decimal importo = Convert.ToDecimal(textBox_Prezzo.Text.Replace(".", ","));
+
+            // Aggiungi la spesa solo se il totale non supera il budget
+            if (speseMensili + importo > budgetMensile)
+            {
+                MessageBox.Show("Hai superato il budget mensile!", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             Spesa nuovaSpesa = new Spesa
             {
                 Categoria = ComboBox_Categoria.SelectedItem.ToString(),
-                Importo = Convert.ToDecimal(textBox_Prezzo.Text.Replace(".", ",")),
+                Importo = importo,
                 Data = DataTimePicker_Data.Value
             };
 
             listaSpese.Add(nuovaSpesa);
+            speseMensili += importo; // Aggiungi l'importo delle nuove spese al totale
+
             AggiornaTabella();
             PulisciCampi();
+
+            // Controlla se l'utente sta avvicinandosi al budget
+            if (speseMensili >= budgetMensile * 0.9m && speseMensili < budgetMensile)
+            {
+                MessageBox.Show($"Attenzione: hai speso circa il 90% del tuo budget mensile.", "Attenzione", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else if (speseMensili > budgetMensile)
+            {
+                MessageBox.Show("Hai superato il tuo budget mensile!", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void AggiornaTabella()
@@ -102,6 +125,7 @@ namespace Progetto_Dell_Anno_2024_25
             if (textBox_Budget.Text != "" && textBox_Budget.Text.All(char.IsDigit))
             {
                 budgetMensile = Convert.ToDecimal(textBox_Budget.Text);
+                speseMensili = 0;
                 MessageBox.Show($"Budget impostato: {budgetMensile:C}", "Successo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 textBox_Budget.Clear();
             }
@@ -191,11 +215,11 @@ namespace Progetto_Dell_Anno_2024_25
 
             using (StreamWriter sw = new StreamWriter(percorsoFile))
             {
-                sw.WriteLine("Categoria,Importo,Data");
+                sw.WriteLine("Categoria" + "Importo" + "Data");
                 for (int i = 0; i < speseMese.Count; i++)
                 {
                     Spesa spesa = speseMese[i];
-                    sw.WriteLine($"{spesa.Categoria},{spesa.Importo},{spesa.Data:dd/MM/yyyy}");
+                    sw.WriteLine($"{spesa.Categoria}" + "{spesa.Importo}" + "{spesa.Data:dd/MM/yyyy}");
                 }
             }
             MessageBox.Show("Report salvato con successo", "Successo", MessageBoxButtons.OK, MessageBoxIcon.Information);
