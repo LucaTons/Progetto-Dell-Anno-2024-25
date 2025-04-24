@@ -12,6 +12,7 @@ namespace Progetto_Dell_Anno_2024_25
         private List<Spesa> listaSpese = new List<Spesa>();
         private decimal budgetMensile = 0;
         private decimal speseMensili = 0;
+        private bool avvisoBudgetMostrato = false;
 
         public DashBoard()
         {
@@ -42,6 +43,7 @@ namespace Progetto_Dell_Anno_2024_25
             if (speseMensili + importo > budgetMensile)
             {
                 MessageBox.Show("Hai superato il budget mensile!", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PulisciCampi();
                 return;
             }
 
@@ -58,14 +60,12 @@ namespace Progetto_Dell_Anno_2024_25
             AggiornaTabella();
             PulisciCampi();
 
-            // Controlla se l'utente sta avvicinandosi al budget
-            if (speseMensili >= budgetMensile * 0.9m && speseMensili < budgetMensile)
+            decimal percentuale = speseMensili / budgetMensile;
+
+            if (!avvisoBudgetMostrato && percentuale >= 0.9m && percentuale < 1.0m)
             {
-                MessageBox.Show($"Attenzione: hai speso circa il 90% del tuo budget mensile.", "Attenzione", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            else if (speseMensili > budgetMensile)
-            {
-                MessageBox.Show("Hai superato il tuo budget mensile!", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Hai speso circa il 90% del tuo budget mensile!\nBudget: {budgetMensile:C} - Spese: {speseMensili:C}", "Attenzione", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                avvisoBudgetMostrato = true;
             }
         }
         #endregion
