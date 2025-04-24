@@ -39,6 +39,13 @@ namespace Progetto_Dell_Anno_2024_25
 
             decimal importo = Convert.ToDecimal(textBox_Prezzo.Text.Replace(".", ","));
 
+            if(budgetMensile == 0)
+            {
+                MessageBox.Show("Non hai inserito il budget mensile!", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PulisciCampi();
+                return;
+            }
+
             // Aggiungi la spesa solo se il totale non supera il budget
             if (speseMensili + importo > budgetMensile)
             {
