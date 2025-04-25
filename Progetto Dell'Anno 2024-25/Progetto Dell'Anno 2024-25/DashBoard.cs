@@ -4,15 +4,19 @@ using System.Windows.Forms;
 using System.Linq;
 using System.Drawing;
 using System.IO;
+using System.Data;
+using MySql.Data.MySqlClient;
+using System.Configuration;
 
 namespace Progetto_Dell_Anno_2024_25
 {
     public partial class DashBoard : Form
     {
         private List<Spesa> listaSpese = new List<Spesa>();
-        private decimal budgetMensile = 0;
+        private Dictionary<int, decimal> budgetMensilePerMese = new Dictionary<int, decimal>();
+        private decimal budgetMensile;
         private decimal speseMensili = 0;
-        private bool avvisoBudgetMostrato = false;
+        string connStr = "server=localhost;database=guardian_of_the_money;user=root;password=root;";
 
         public DashBoard()
         {
@@ -20,6 +24,8 @@ namespace Progetto_Dell_Anno_2024_25
             InizializzaComboBox();
             ImpostaControlli();
             InizializzaListView();
+            CaricaBudgetDalDatabase();
+            CaricaSpeseDalDatabase();
         }
 
         #region BOTTONE AGGIUNGI SPESA
@@ -30,50 +36,130 @@ namespace Progetto_Dell_Anno_2024_25
                 MessageBox.Show("Compila tutti i campi!", "ERRORE", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
             if (!textBox_Prezzo.Text.All(c => char.IsDigit(c) || c == ',' || c == '.'))
             {
-                MessageBox.Show("Inserisci solo numeri validi nel campo prezzo.", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Inserisci solo numeri validi nel campo prezzo.", "ERRORE", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
             decimal importo = Convert.ToDecimal(textBox_Prezzo.Text.Replace(".", ","));
-
-            if(budgetMensile == 0)
+            int meseCorrente = DateTime.Now.Month;
+            if (!budgetMensilePerMese.ContainsKey(meseCorrente))
             {
-                MessageBox.Show("Non hai inserito il budget mensile!", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Non hai impostato il budget per il mese corrente!", "ERRORE", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 PulisciCampi();
                 return;
             }
+            budgetMensile = budgetMensilePerMese[meseCorrente];
 
-            // Aggiungi la spesa solo se il totale non supera il budget
             if (speseMensili + importo > budgetMensile)
             {
-                MessageBox.Show("Hai superato il budget mensile!", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                PulisciCampi();
-                return;
+                MessageBox.Show("Hai superato il budget mensile!", "ATTENZIONE", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-
             Spesa nuovaSpesa = new Spesa
             {
                 Categoria = ComboBox_Categoria.SelectedItem.ToString(),
                 Importo = importo,
                 Data = DataTimePicker_Data.Value
             };
-
             listaSpese.Add(nuovaSpesa);
-            speseMensili += importo; // Aggiungi l'importo delle nuove spese al totale
+            SalvaSpesaNelDatabase(nuovaSpesa); // Ora salva anche l'ID
+            speseMensili += importo;
+            AggiornaTabella();
+            AggiornaBudgetLabel();
+            PulisciCampi();
+        }
+        #endregion
 
+        #region BOTTONE MODIFICA SPESA
+        private void button_ModificaSpesa_Click(object sender, EventArgs e)
+        {
+            if (Visualizza_Spese.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Seleziona una spesa da modificare.", "ATTENZIONE", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int indice = Visualizza_Spese.SelectedItems[0].Index;
+            Spesa spesaDaModificare = listaSpese[indice];
+
+            string nuovaCategoria = ComboBox_Categoria.Text;
+            string nuovoImportoText = textBox_Prezzo.Text;
+            DateTime nuovaData = DataTimePicker_Data.Value;
+
+            if (nuovaCategoria == "" || nuovoImportoText == "")
+            {
+                MessageBox.Show("Completa i campi per la modifica", "ERRORE", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            decimal nuovoImporto = Convert.ToDecimal(nuovoImportoText.Replace(".", ","));
+
+            speseMensili -= spesaDaModificare.Importo;
+            speseMensili += nuovoImporto;
+
+            // Aggiorna in lista
+            spesaDaModificare.Categoria = nuovaCategoria;
+            spesaDaModificare.Importo = nuovoImporto;
+            spesaDaModificare.Data = nuovaData;
+
+            // Aggiorna nel DB (USANDO MYSQL)
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                string query = "UPDATE gestore_spese SET categoria = @categoria, importo = @importo, data = @data WHERE id = @id";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@categoria", nuovaCategoria);
+                    cmd.Parameters.AddWithValue("@importo", nuovoImporto);
+                    cmd.Parameters.AddWithValue("@data", nuovaData);
+                    cmd.Parameters.AddWithValue("@id", spesaDaModificare.Id);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
             AggiornaTabella();
             PulisciCampi();
+            AggiornaBudgetLabel();
+            MessageBox.Show("Spesa modificata con successo", "SUCCESSO", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        #endregion
 
-            decimal percentuale = speseMensili / budgetMensile;
-
-            if (!avvisoBudgetMostrato && percentuale >= 0.9m && percentuale < 1.0m)
+        #region BOTTONE ELIMINA SPESA
+        private void button_EliminaSpesa_Click(object sender, EventArgs e)
+        {
+            if (Visualizza_Spese.SelectedItems.Count == 0)
             {
-                MessageBox.Show($"Hai speso circa il 90% del tuo budget mensile!\nBudget: {budgetMensile:C} - Spese: {speseMensili:C}", "Attenzione", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                avvisoBudgetMostrato = true;
+                MessageBox.Show("Seleziona una spesa da eliminare", "ATTENZIONE", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
+
+            int indice = Visualizza_Spese.SelectedItems[0].Index;
+            Spesa spesaDaEliminare = listaSpese[indice];
+
+            DialogResult risultato = MessageBox.Show("Sei sicuro di voler eliminare questa spesa?", "CONFERMA", MessageBoxButtons.YesNo);
+            if (risultato == DialogResult.No)
+            {
+                return;
+            }
+
+            decimal importoDaRimuovere = listaSpese[indice].Importo;
+            speseMensili -= importoDaRimuovere;
+            listaSpese.RemoveAt(indice);
+            AggiornaTabella();
+            AggiornaBudgetLabel();
+
+            // Elimina dal DB (USANDO MYSQL)
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                string query = "DELETE FROM gestore_spese WHERE id = @id";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", spesaDaEliminare.Id);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            MessageBox.Show("Spesa eliminata con successo!", "SUCCESSO", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         #endregion
 
@@ -123,7 +209,7 @@ namespace Progetto_Dell_Anno_2024_25
                 for (int i = 0; i < speseMese.Count; i++)
                 {
                     Spesa spesa = speseMese[i];
-                    sw.WriteLine($"{spesa.Categoria}" + "{spesa.Importo}" + "{spesa.Data:dd/MM/yyyy}");
+                    sw.WriteLine($"{spesa.Categoria},{spesa.Importo},{spesa.Data:dd/MM/yyyy}");
                 }
             }
             MessageBox.Show("Report salvato con successo", "Successo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -135,14 +221,26 @@ namespace Progetto_Dell_Anno_2024_25
         {
             if (textBox_Budget.Text != "" && textBox_Budget.Text.All(char.IsDigit))
             {
-                budgetMensile = Convert.ToDecimal(textBox_Budget.Text);
+                int meseCorrente = DateTime.Now.Month;
+                int annoCorrente = DateTime.Now.Year;
+                decimal budget = Convert.ToDecimal(textBox_Budget.Text);
+
+                // Aggiorna in memoria
+                budgetMensilePerMese[meseCorrente] = budget;
+                budgetMensile = budget;
                 speseMensili = 0;
-                MessageBox.Show($"Budget impostato: {budgetMensile:C}", "Successo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Salva nel database
+                SalvaBudgetNelDatabase(meseCorrente, annoCorrente, budget);
+
+                MessageBox.Show($"Budget per il mese di {DateTime.Now.ToString("MMMM")}: {budget:C}", "SUCCESSO", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                 textBox_Budget.Clear();
+                AggiornaBudgetLabel();
             }
             else
             {
-                MessageBox.Show("Inserisci un numero valido!", "Attenzione", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Inserisci un numero valido!", "ERRORE", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBox_Budget.Clear();
             }
         }
@@ -153,7 +251,7 @@ namespace Progetto_Dell_Anno_2024_25
         {
             ComboBox_Categoria.Items.AddRange(new string[] { "Uscite", "Trasporti", "Bollette", "Visite", "Farmacia", "Mutuo", "Bolli", "Assicurazioni", "Varie" });
             comboBox_Mesi.Items.AddRange(new string[] { "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre" });
-            comboBox_CambiaTema.Items.AddRange(new string[] { "Chiaro", "Scuro" });
+            toolStripComboBox_CambioTema.Items.AddRange(new string[] { "Chiaro", "Scuro" });
         }
         #endregion
 
@@ -186,17 +284,186 @@ namespace Progetto_Dell_Anno_2024_25
                 item.SubItems.Add(spesa.Data.ToString("dd/MM/yyyy"));
                 Visualizza_Spese.Items.Add(item);
             }
+            button_OrdinaPerData.Enabled = true;
+            button_ModificaSpesa.Enabled = true;
+            button_EliminaSpesa.Enabled = true;
         }
         #endregion
 
-        #region COMBOBOX CAMBIO TEMA
-        private void comboBox_CambiaTema_SelectedIndexChanged(object sender, EventArgs e)
+        #region AGGIORNA LABEL BUDGET
+        private void AggiornaBudgetLabel()
         {
-            if (comboBox_CambiaTema.SelectedItem != null)
-                CambiaTema(comboBox_CambiaTema.SelectedItem.ToString());
+            int meseCorrente = DateTime.Now.Month;
+            if (budgetMensilePerMese.ContainsKey(meseCorrente))
+            {
+                decimal budget = budgetMensilePerMese[meseCorrente];
+                decimal saldo = budget - speseMensili;
+                label_Budget.Text = $"Budget del mese di {DateTime.Now.ToString("MMMM")}: {budget:C} | Saldo: {saldo:C}";
+            }
+            else
+            {
+                label_Budget.Text = "Nessun budget impostato per questo mese!";
+            }
         }
         #endregion
-        
+
+        #region MOSTRA TUTTE LE TABELLE
+        /*private void MostraTutteLeTabelle()
+        {
+            string connStr = ConfigurationManager.ConnectionStrings["connString"].ConnectionString;
+
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+                DataTable schema = conn.GetSchema("Tables");
+
+                foreach (DataRow row in schema.Rows)
+                {
+                    string tableName = row[2].ToString();
+                    string query = $"SELECT * FROM [{tableName}]";
+
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(query, conn))
+                    {
+                        DataTable dataTable = new DataTable();
+                        adapter.Fill(dataTable);
+
+                        // Crea un nuovo TabPage per ogni tabella
+                        TabPage tabPage = new TabPage(tableName);
+                        DataGridView dataGridView = new DataGridView
+                        {
+                            DataSource = dataTable,
+                            Dock = DockStyle.Fill,
+                            ReadOnly = true,
+                            AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+                        };
+                        tabPage.Controls.Add(dataGridView);
+                        tabControlTabelle.TabPages.Add(tabPage);
+                    }
+                }
+            }
+        }*/
+        #endregion
+
+        #region SOTTOPROGRAMMA SALVA BUDGET DB
+        private void SalvaBudgetNelDatabase(int mese, int anno, decimal importo)
+        {
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                // Query per inserire o aggiornare il budget
+                string query = @"INSERT INTO budget_mensili (mese, anno, importo) 
+                         VALUES (@mese, @anno, @importo)
+                         ON DUPLICATE KEY UPDATE importo = @importo";
+
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@mese", mese);
+                    cmd.Parameters.AddWithValue("@anno", anno);
+                    cmd.Parameters.AddWithValue("@importo", importo);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        #endregion
+
+        #region SOTTOPROGRAMMA CARICA BUDGET DB
+        private void CaricaBudgetDalDatabase()
+        {
+            budgetMensilePerMese.Clear();
+
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                string query = "SELECT mese, anno, importo FROM budget_mensili";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    conn.Open();
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int mese = Convert.ToInt32(reader["mese"]);
+                            int anno = Convert.ToInt32(reader["anno"]);
+                            decimal importo = Convert.ToDecimal(reader["importo"]);
+
+                            // Se è l'anno corrente, aggiungi al dizionario
+                            if (anno == DateTime.Now.Year)
+                            {
+                                budgetMensilePerMese[mese] = importo;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Aggiorna il budget corrente
+            int meseCorrente = DateTime.Now.Month;
+            if (budgetMensilePerMese.ContainsKey(meseCorrente))
+            {
+                budgetMensile = budgetMensilePerMese[meseCorrente];
+            }
+
+            AggiornaBudgetLabel();
+        }
+        #endregion
+
+        #region SOTTOPROGRAMMA SALVA SPESE DB
+        private void SalvaSpesaNelDatabase(Spesa spesa)
+        {
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                // Query modificata per auto-incrementare l'ID
+                string query = "INSERT INTO gestore_spese (categoria, importo, data) VALUES (@categoria, @importo, @data); SELECT LAST_INSERT_ID();";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@categoria", spesa.Categoria);
+                    cmd.Parameters.AddWithValue("@importo", spesa.Importo);
+                    cmd.Parameters.AddWithValue("@data", spesa.Data);
+
+                    conn.Open();
+                    // Ottieni l'ID generato dal database
+                    spesa.Id = Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+        }
+        #endregion
+
+        #region SOTTOPROGRAMMA CARICA SPESE DB
+        private void CaricaSpeseDalDatabase()
+        {
+            listaSpese.Clear();
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                string query = "SELECT id, categoria, importo, data FROM gestore_spese";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    conn.Open();
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Spesa s = new Spesa
+                            {
+                                Id = Convert.ToInt32(reader["id"]), // Aggiunto questa linea
+                                Categoria = reader["categoria"].ToString(),
+                                Importo = Convert.ToDecimal(reader["importo"]),
+                                Data = Convert.ToDateTime(reader["data"])
+                            };
+                            listaSpese.Add(s);
+                        }
+                    }
+                }
+            }
+
+            // Aggiorna il totale delle spese mensili
+            speseMensili = listaSpese
+                .Where(s => s.Data.Month == DateTime.Now.Month && s.Data.Year == DateTime.Now.Year)
+                .Sum(s => s.Importo);
+
+            AggiornaTabella();
+            AggiornaBudgetLabel();
+        }
+        #endregion
+
         #region SOTTOPROGRAMMA PULISCI CAMPI
         private void PulisciCampi()
         {
@@ -223,16 +490,15 @@ namespace Progetto_Dell_Anno_2024_25
                 {
                     Control c = this.Controls[i];
                     c.ForeColor = Color.Black;
-                    tabPageAggiungi.BackColor = Color.Black;
-                    tabPageVisualizza.BackColor = Color.Black;
-                    tabPageReport.BackColor = Color.Black;
-                    tabPageImpostazioni.BackColor = Color.Black;
-                    label_ImpostaBudget.ForeColor = Color.White;
-                    label_CambiaTema.ForeColor = Color.White;
-                    label_Visualizza.ForeColor = Color.White;
-                    label_Aggiungi.ForeColor = Color.White;
-                    label_Report.ForeColor = Color.White;
                 }
+                tabPageAggiungi.BackColor = Color.Black;
+                tabPageVisualizza.BackColor = Color.Black;
+                tabPageReport.BackColor = Color.Black;
+                tabPageImpostazioni.BackColor = Color.Black;
+                label_ImpostaBudget.ForeColor = Color.White;
+                label_Visualizza.ForeColor = Color.White;
+                label_Aggiungi.ForeColor = Color.White;
+                label_Report.ForeColor = Color.White;
             }
             else
             {
@@ -241,25 +507,62 @@ namespace Progetto_Dell_Anno_2024_25
                 {
                     Control c = this.Controls[i];
                     c.ForeColor = Color.Black;
-                    tabPageAggiungi.BackColor = Color.White;
-                    tabPageVisualizza.BackColor = Color.White;
-                    tabPageReport.BackColor = Color.White;
-                    tabPageImpostazioni.BackColor = Color.White;
-                    label_ImpostaBudget.ForeColor = Color.Black;
-                    label_CambiaTema.ForeColor = Color.Black;
-                    label_Visualizza.ForeColor = Color.Black;
-                    label_Aggiungi.ForeColor = Color.Black;
-                    label_Report.ForeColor = Color.Black;
                 }
+                tabPageAggiungi.BackColor = Color.White;
+                tabPageVisualizza.BackColor = Color.White;
+                tabPageReport.BackColor = Color.White;
+                tabPageImpostazioni.BackColor = Color.White;
+                label_ImpostaBudget.ForeColor = Color.Black;
+                label_Visualizza.ForeColor = Color.Black;
+                label_Aggiungi.ForeColor = Color.Black;
+                label_Report.ForeColor = Color.Black;
             }
         }
+
+        private void toolStripComboBox_CambioTema_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string temaSelezionato = toolStripComboBox_CambioTema.SelectedItem.ToString();
+            CambiaTema(temaSelezionato);
+        }
         #endregion
-    }
-    
-    public class Spesa
-    {
-        public string Categoria { get; set; }
-        public decimal Importo { get; set; }
-        public DateTime Data { get; set; }
+
+        #region SOTTOPROGRAMMA GRAFICO SPESE
+        /*private void CreaGraficoSpese()
+        {
+            chartSpese.Series.Clear();
+            chartSpese.ChartAreas.Clear();
+            chartSpese.Titles.Clear();
+
+            ChartArea chartArea = new ChartArea();
+            chartSpese.ChartAreas.Add(chartArea);
+
+            Series series = new Series
+            {
+                Name = "Spese",
+                IsValueShownAsLabel = true,
+                ChartType = SeriesChartType.Pie
+            };
+
+            var spesePerCategoria = listaSpese
+                .GroupBy(s => s.Categoria)
+                .Select(g => new { Categoria = g.Key, Totale = g.Sum(s => s.Importo) });
+
+            foreach (var item in spesePerCategoria)
+            {
+                series.Points.AddXY(item.Categoria, item.Totale);
+            }
+
+            chartSpese.Series.Add(series);
+            chartSpese.Titles.Add("Distribuzione delle Spese per Categoria");
+        }*/
+        #endregion
+
+        public class Spesa
+        {
+            public int Id { get; set; }
+            public string Categoria { get; set; }
+            public decimal Importo { get; set; }
+            public DateTime Data { get; set; }
+        }
     }
 }

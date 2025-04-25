@@ -1,7 +1,6 @@
 C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\Progetto Dell'Anno 2024-25.exe.config
 C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\Progetto Dell'Anno 2024-25.exe
 C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\Progetto Dell'Anno 2024-25.pdb
-C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.csproj.AssemblyReference.cache
 C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto_Dell_Anno_2024_25.Properties.Resources.resources
 C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.csproj.GenerateResource.cache
 C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.csproj.CoreCompileInputs.cache
@@ -20,3 +19,37 @@ C:\Users\st11004\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\P
 C:\Users\st11004\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.csproj.CoreCompileInputs.cache
 C:\Users\st11004\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.exe
 C:\Users\st11004\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.pdb
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\BouncyCastle.Cryptography.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\Google.Protobuf.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\K4os.Compression.LZ4.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\K4os.Compression.LZ4.Streams.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\K4os.Hash.xxHash.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\MySql.Data.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.Buffers.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.Configuration.ConfigurationManager.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.Diagnostics.DiagnosticSource.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.IO.Pipelines.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.Memory.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.Numerics.Vectors.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\ZstdSharp.dll
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\BouncyCastle.Cryptography.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\Google.Protobuf.pdb
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\Google.Protobuf.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\K4os.Compression.LZ4.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\K4os.Compression.LZ4.Streams.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\K4os.Hash.xxHash.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\MySql.Data.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.Buffers.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.Configuration.ConfigurationManager.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.Diagnostics.DiagnosticSource.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.IO.Pipelines.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.Memory.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.Numerics.Vectors.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\bin\Debug\System.Threading.Tasks.Extensions.xml
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.csproj.CopyComplete
+C:\Users\LUCA\Desktop\Progetto-Dell-Anno-2024-25\Progetto Dell'Anno 2024-25\Progetto Dell'Anno 2024-25\obj\Debug\Progetto Dell'Anno 2024-25.csproj.AssemblyReference.cache
