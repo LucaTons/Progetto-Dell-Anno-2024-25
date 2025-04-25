@@ -24,8 +24,8 @@ namespace Progetto_Dell_Anno_2024_25
             InizializzaComboBox();
             ImpostaControlli();
             InizializzaListView();
-            CaricaBudgetDalDatabase();
             CaricaSpeseDalDatabase();
+            CaricaBudgetDalDatabase();
         }
 
         #region BOTTONE AGGIUNGI SPESA
@@ -62,7 +62,7 @@ namespace Progetto_Dell_Anno_2024_25
                 Data = DataTimePicker_Data.Value
             };
             listaSpese.Add(nuovaSpesa);
-            SalvaSpesaNelDatabase(nuovaSpesa); // Ora salva anche l'ID
+            SalvaSpesaNelDatabase(nuovaSpesa);
             speseMensili += importo;
             AggiornaTabella();
             AggiornaBudgetLabel();
@@ -78,13 +78,17 @@ namespace Progetto_Dell_Anno_2024_25
                 MessageBox.Show("Seleziona una spesa da modificare.", "ATTENZIONE", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            else
+            {
+                
+            }
 
             int indice = Visualizza_Spese.SelectedItems[0].Index;
             Spesa spesaDaModificare = listaSpese[indice];
-
-            string nuovaCategoria = ComboBox_Categoria.Text;
-            string nuovoImportoText = textBox_Prezzo.Text;
-            DateTime nuovaData = DataTimePicker_Data.Value;
+            
+            string nuovaCategoria = comboBox_Categorie.Text;
+            string nuovoImportoText = textBox_Importo.Text;
+            DateTime nuovaData = dateTimePicker_Data.Value;
 
             if (nuovaCategoria == "" || nuovoImportoText == "")
             {
@@ -168,6 +172,7 @@ namespace Progetto_Dell_Anno_2024_25
         {
             listaSpese.Sort(ConfrontaDate);
             AggiornaTabella();
+            //AggiornaOrdineNelDatabase();
         }
         #endregion
 
@@ -250,6 +255,7 @@ namespace Progetto_Dell_Anno_2024_25
         private void InizializzaComboBox()
         {
             ComboBox_Categoria.Items.AddRange(new string[] { "Uscite", "Trasporti", "Bollette", "Visite", "Farmacia", "Mutuo", "Bolli", "Assicurazioni", "Varie" });
+            comboBox_Categorie.Items.AddRange(new string[] { "Uscite", "Trasporti", "Bollette", "Visite", "Farmacia", "Mutuo", "Bolli", "Assicurazioni", "Varie" });
             comboBox_Mesi.Items.AddRange(new string[] { "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre" });
             toolStripComboBox_CambioTema.Items.AddRange(new string[] { "Chiaro", "Scuro" });
         }
@@ -287,6 +293,9 @@ namespace Progetto_Dell_Anno_2024_25
             button_OrdinaPerData.Enabled = true;
             button_ModificaSpesa.Enabled = true;
             button_EliminaSpesa.Enabled = true;
+            comboBox_Categorie.Enabled = true;
+            textBox_Importo.Enabled = true;
+            dateTimePicker_Data.Enabled = true;
         }
         #endregion
 
@@ -338,6 +347,28 @@ namespace Progetto_Dell_Anno_2024_25
                         };
                         tabPage.Controls.Add(dataGridView);
                         tabControlTabelle.TabPages.Add(tabPage);
+                    }
+                }
+            }
+        }*/
+        #endregion
+
+        #region SOTTOPROGRAMMA ORDINA SPESE DB
+        /*private void AggiornaOrdineNelDatabase()
+        {
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                conn.Open();
+
+                // Aggiorna l'ordine per ogni spesa
+                for (int i = 0; i < listaSpese.Count; i++)
+                {
+                    string updateQuery = "UPDATE gestore_spese SET ordine = @ordine WHERE id = @id";
+                    using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, conn))
+                    {
+                        updateCmd.Parameters.AddWithValue("@ordine", i);
+                        updateCmd.Parameters.AddWithValue("@id", listaSpese[i].Id);
+                        updateCmd.ExecuteNonQuery();
                     }
                 }
             }
@@ -411,7 +442,6 @@ namespace Progetto_Dell_Anno_2024_25
         {
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
-                // Query modificata per auto-incrementare l'ID
                 string query = "INSERT INTO gestore_spese (categoria, importo, data) VALUES (@categoria, @importo, @data); SELECT LAST_INSERT_ID();";
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
@@ -420,7 +450,6 @@ namespace Progetto_Dell_Anno_2024_25
                     cmd.Parameters.AddWithValue("@data", spesa.Data);
 
                     conn.Open();
-                    // Ottieni l'ID generato dal database
                     spesa.Id = Convert.ToInt32(cmd.ExecuteScalar());
                 }
             }
@@ -433,7 +462,7 @@ namespace Progetto_Dell_Anno_2024_25
             listaSpese.Clear();
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
-                string query = "SELECT id, categoria, importo, data FROM gestore_spese";
+                string query = "SELECT id, categoria, importo, data FROM gestore_spese WHERE MONTH(data) = MONTH(CURRENT_DATE()) AND YEAR(data) = YEAR(CURRENT_DATE());";
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     conn.Open();
@@ -470,6 +499,9 @@ namespace Progetto_Dell_Anno_2024_25
             ComboBox_Categoria.SelectedIndex = -1;
             textBox_Prezzo.Text = "";
             DataTimePicker_Data.Value = DateTime.Today;
+            comboBox_Categorie.SelectedIndex = -1;
+            textBox_Importo.Text = "";
+            dateTimePicker_Data.Value = DateTime.Today;
         }
         #endregion
 
@@ -519,42 +551,11 @@ namespace Progetto_Dell_Anno_2024_25
             }
         }
 
-        private void toolStripComboBox_CambioTema_SelectedIndexChanged(object sender, EventArgs e)
+        private void toolStripComboBox_CambioTema_Click(object sender, EventArgs e)
         {
-            string temaSelezionato = toolStripComboBox_CambioTema.SelectedItem.ToString();
+            string temaSelezionato = toolStripComboBox_CambioTema.SelectedIndex.ToString();
             CambiaTema(temaSelezionato);
         }
-        #endregion
-
-        #region SOTTOPROGRAMMA GRAFICO SPESE
-        /*private void CreaGraficoSpese()
-        {
-            chartSpese.Series.Clear();
-            chartSpese.ChartAreas.Clear();
-            chartSpese.Titles.Clear();
-
-            ChartArea chartArea = new ChartArea();
-            chartSpese.ChartAreas.Add(chartArea);
-
-            Series series = new Series
-            {
-                Name = "Spese",
-                IsValueShownAsLabel = true,
-                ChartType = SeriesChartType.Pie
-            };
-
-            var spesePerCategoria = listaSpese
-                .GroupBy(s => s.Categoria)
-                .Select(g => new { Categoria = g.Key, Totale = g.Sum(s => s.Importo) });
-
-            foreach (var item in spesePerCategoria)
-            {
-                series.Points.AddXY(item.Categoria, item.Totale);
-            }
-
-            chartSpese.Series.Add(series);
-            chartSpese.Titles.Add("Distribuzione delle Spese per Categoria");
-        }*/
         #endregion
 
         public class Spesa

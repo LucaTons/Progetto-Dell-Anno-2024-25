@@ -54,6 +54,9 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripComboBox_CambioTema = new System.Windows.Forms.ToolStripComboBox();
+            this.textBox_Importo = new System.Windows.Forms.TextBox();
+            this.comboBox_Categorie = new System.Windows.Forms.ComboBox();
+            this.dateTimePicker_Data = new System.Windows.Forms.DateTimePicker();
             this.tabControlOperazioni.SuspendLayout();
             this.tabPageImpostazioni.SuspendLayout();
             this.tabPageAggiungi.SuspendLayout();
@@ -173,6 +176,9 @@
             // 
             // tabPageVisualizza
             // 
+            this.tabPageVisualizza.Controls.Add(this.textBox_Importo);
+            this.tabPageVisualizza.Controls.Add(this.comboBox_Categorie);
+            this.tabPageVisualizza.Controls.Add(this.dateTimePicker_Data);
             this.tabPageVisualizza.Controls.Add(this.label_Budget);
             this.tabPageVisualizza.Controls.Add(this.button_EliminaSpesa);
             this.tabPageVisualizza.Controls.Add(this.button_ModificaSpesa);
@@ -199,7 +205,7 @@
             // button_EliminaSpesa
             // 
             this.button_EliminaSpesa.Enabled = false;
-            this.button_EliminaSpesa.Location = new System.Drawing.Point(496, 320);
+            this.button_EliminaSpesa.Location = new System.Drawing.Point(496, 304);
             this.button_EliminaSpesa.Name = "button_EliminaSpesa";
             this.button_EliminaSpesa.Size = new System.Drawing.Size(153, 48);
             this.button_EliminaSpesa.TabIndex = 8;
@@ -210,7 +216,7 @@
             // button_ModificaSpesa
             // 
             this.button_ModificaSpesa.Enabled = false;
-            this.button_ModificaSpesa.Location = new System.Drawing.Point(496, 249);
+            this.button_ModificaSpesa.Location = new System.Drawing.Point(112, 358);
             this.button_ModificaSpesa.Name = "button_ModificaSpesa";
             this.button_ModificaSpesa.Size = new System.Drawing.Size(153, 48);
             this.button_ModificaSpesa.TabIndex = 7;
@@ -221,7 +227,7 @@
             // button_OrdinaPerData
             // 
             this.button_OrdinaPerData.Enabled = false;
-            this.button_OrdinaPerData.Location = new System.Drawing.Point(496, 181);
+            this.button_OrdinaPerData.Location = new System.Drawing.Point(496, 210);
             this.button_OrdinaPerData.Name = "button_OrdinaPerData";
             this.button_OrdinaPerData.Size = new System.Drawing.Size(153, 45);
             this.button_OrdinaPerData.TabIndex = 6;
@@ -314,6 +320,31 @@
             this.toolStripComboBox_CambioTema.Name = "toolStripComboBox_CambioTema";
             this.toolStripComboBox_CambioTema.Size = new System.Drawing.Size(121, 28);
             // 
+            // textBox_Importo
+            // 
+            this.textBox_Importo.Enabled = false;
+            this.textBox_Importo.Location = new System.Drawing.Point(112, 264);
+            this.textBox_Importo.Name = "textBox_Importo";
+            this.textBox_Importo.Size = new System.Drawing.Size(250, 22);
+            this.textBox_Importo.TabIndex = 12;
+            // 
+            // comboBox_Categorie
+            // 
+            this.comboBox_Categorie.Enabled = false;
+            this.comboBox_Categorie.FormattingEnabled = true;
+            this.comboBox_Categorie.Location = new System.Drawing.Point(112, 221);
+            this.comboBox_Categorie.Name = "comboBox_Categorie";
+            this.comboBox_Categorie.Size = new System.Drawing.Size(250, 24);
+            this.comboBox_Categorie.TabIndex = 10;
+            // 
+            // dateTimePicker_Data
+            // 
+            this.dateTimePicker_Data.Enabled = false;
+            this.dateTimePicker_Data.Location = new System.Drawing.Point(112, 304);
+            this.dateTimePicker_Data.Name = "dateTimePicker_Data";
+            this.dateTimePicker_Data.Size = new System.Drawing.Size(250, 22);
+            this.dateTimePicker_Data.TabIndex = 11;
+            // 
             // DashBoard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -367,5 +398,8 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBox_CambioTema;
         private System.Windows.Forms.Label label_Budget;
+        private System.Windows.Forms.TextBox textBox_Importo;
+        private System.Windows.Forms.ComboBox comboBox_Categorie;
+        private System.Windows.Forms.DateTimePicker dateTimePicker_Data;
     }
 }
