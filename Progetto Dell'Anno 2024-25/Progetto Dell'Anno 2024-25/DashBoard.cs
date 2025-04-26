@@ -4,9 +4,7 @@ using System.Windows.Forms;
 using System.Linq;
 using System.Drawing;
 using System.IO;
-using System.Data;
 using MySql.Data.MySqlClient;
-using System.Configuration;
 
 namespace Progetto_Dell_Anno_2024_25
 {
@@ -75,55 +73,56 @@ namespace Progetto_Dell_Anno_2024_25
         {
             if (Visualizza_Spese.SelectedItems.Count == 0)
             {
-                MessageBox.Show("Seleziona una spesa da modificare.", "ATTENZIONE", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Seleziona una spesa da modificare!", "ATTENZIONE",
+                              MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
-            }
-            else
-            {
-                
             }
 
             int indice = Visualizza_Spese.SelectedItems[0].Index;
             Spesa spesaDaModificare = listaSpese[indice];
-            
-            string nuovaCategoria = comboBox_Categorie.Text;
-            string nuovoImportoText = textBox_Importo.Text;
-            DateTime nuovaData = dateTimePicker_Data.Value;
 
-            if (nuovaCategoria == "" || nuovoImportoText == "")
+            // Verifica campi obbligatori
+            if (string.IsNullOrEmpty(comboBox_Categorie.Text) ||
+                string.IsNullOrEmpty(textBox_Importo.Text))
             {
-                MessageBox.Show("Completa i campi per la modifica", "ERRORE", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Compila tutti i campi!", "ERRORE", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
-            decimal nuovoImporto = Convert.ToDecimal(nuovoImportoText.Replace(".", ","));
-
-            speseMensili -= spesaDaModificare.Importo;
-            speseMensili += nuovoImporto;
-
-            // Aggiorna in lista
-            spesaDaModificare.Categoria = nuovaCategoria;
-            spesaDaModificare.Importo = nuovoImporto;
-            spesaDaModificare.Data = nuovaData;
-
-            // Aggiorna nel DB (USANDO MYSQL)
+            decimal nuovoImporto;
+            if (!decimal.TryParse(textBox_Importo.Text.Replace(".", ","), out nuovoImporto))
+            {
+                MessageBox.Show("Importo non valido!", "ERRORE", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 string query = "UPDATE gestore_spese SET categoria = @categoria, importo = @importo, data = @data WHERE id = @id";
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@categoria", nuovaCategoria);
+                    cmd.Parameters.AddWithValue("@categoria", comboBox_Categorie.Text);
                     cmd.Parameters.AddWithValue("@importo", nuovoImporto);
-                    cmd.Parameters.AddWithValue("@data", nuovaData);
+                    cmd.Parameters.AddWithValue("@data", dateTimePicker_Data.Value);
                     cmd.Parameters.AddWithValue("@id", spesaDaModificare.Id);
                     conn.Open();
-                    cmd.ExecuteNonQuery();
+                    int righeModificate = cmd.ExecuteNonQuery();
+                    if (righeModificate > 0)
+                    {
+                        speseMensili -= spesaDaModificare.Importo;
+                        spesaDaModificare.Categoria = comboBox_Categorie.Text;
+                        spesaDaModificare.Importo = nuovoImporto;
+                        spesaDaModificare.Data = dateTimePicker_Data.Value;
+                        speseMensili += nuovoImporto;
+                        AggiornaTabella();
+                        PulisciCampi();
+                        AggiornaBudgetLabel();
+                        MessageBox.Show("Spesa modificata con successo!", "SUCCESSO", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Errore durante la modifica", "ERRORE", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
-            AggiornaTabella();
-            PulisciCampi();
-            AggiornaBudgetLabel();
-            MessageBox.Show("Spesa modificata con successo", "SUCCESSO", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         #endregion
 
@@ -139,19 +138,15 @@ namespace Progetto_Dell_Anno_2024_25
             int indice = Visualizza_Spese.SelectedItems[0].Index;
             Spesa spesaDaEliminare = listaSpese[indice];
 
-            DialogResult risultato = MessageBox.Show("Sei sicuro di voler eliminare questa spesa?", "CONFERMA", MessageBoxButtons.YesNo);
+            DialogResult risultato = MessageBox.Show(
+                "Sei sicuro di voler eliminare questa spesa?",
+                "CONFERMA",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
             if (risultato == DialogResult.No)
-            {
                 return;
-            }
 
-            decimal importoDaRimuovere = listaSpese[indice].Importo;
-            speseMensili -= importoDaRimuovere;
-            listaSpese.RemoveAt(indice);
-            AggiornaTabella();
-            AggiornaBudgetLabel();
-
-            // Elimina dal DB (USANDO MYSQL)
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 string query = "DELETE FROM gestore_spese WHERE id = @id";
@@ -159,11 +154,34 @@ namespace Progetto_Dell_Anno_2024_25
                 {
                     cmd.Parameters.AddWithValue("@id", spesaDaEliminare.Id);
                     conn.Open();
-                    cmd.ExecuteNonQuery();
+
+                    int righeEliminate = cmd.ExecuteNonQuery();
+                    if (righeEliminate > 0)
+                    {
+                        // Rimuovo dalla lista in memoria e aggiorno UI
+                        listaSpese.RemoveAt(indice);
+                        speseMensili -= spesaDaEliminare.Importo;
+                        AggiornaTabella();
+                        AggiornaBudgetLabel();
+
+                        // SE NON CI SONO PIÙ RIGHE, resetta l'AUTO_INCREMENT a 1
+                        using (var cmdCount = new MySqlCommand("SELECT COUNT(*) FROM gestore_spese", conn))
+                        {
+                            int count = Convert.ToInt32(cmdCount.ExecuteScalar());
+                            if (count == 0)
+                            {
+                                ResettaIdAutoIncrement();
+                            }
+                        }
+
+                        MessageBox.Show("Spesa eliminata con successo!", "SUCCESSO", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Errore durante l'eliminazione", "ERRORE", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
-
-            MessageBox.Show("Spesa eliminata con successo!", "SUCCESSO", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         #endregion
 
@@ -172,7 +190,6 @@ namespace Progetto_Dell_Anno_2024_25
         {
             listaSpese.Sort(ConfrontaDate);
             AggiornaTabella();
-            //AggiornaOrdineNelDatabase();
         }
         #endregion
 
@@ -316,63 +333,51 @@ namespace Progetto_Dell_Anno_2024_25
         }
         #endregion
 
-        #region MOSTRA TUTTE LE TABELLE
-        /*private void MostraTutteLeTabelle()
-        {
-            string connStr = ConfigurationManager.ConnectionStrings["connString"].ConnectionString;
-
-            using (SqlConnection conn = new SqlConnection(connStr))
-            {
-                conn.Open();
-                DataTable schema = conn.GetSchema("Tables");
-
-                foreach (DataRow row in schema.Rows)
-                {
-                    string tableName = row[2].ToString();
-                    string query = $"SELECT * FROM [{tableName}]";
-
-                    using (SqlDataAdapter adapter = new SqlDataAdapter(query, conn))
-                    {
-                        DataTable dataTable = new DataTable();
-                        adapter.Fill(dataTable);
-
-                        // Crea un nuovo TabPage per ogni tabella
-                        TabPage tabPage = new TabPage(tableName);
-                        DataGridView dataGridView = new DataGridView
-                        {
-                            DataSource = dataTable,
-                            Dock = DockStyle.Fill,
-                            ReadOnly = true,
-                            AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-                        };
-                        tabPage.Controls.Add(dataGridView);
-                        tabControlTabelle.TabPages.Add(tabPage);
-                    }
-                }
-            }
-        }*/
-        #endregion
-
-        #region SOTTOPROGRAMMA ORDINA SPESE DB
-        /*private void AggiornaOrdineNelDatabase()
+        #region SOTTOPROGRAMMA RESETTA ID
+        private void ResettaIdAutoIncrement()
         {
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
-                conn.Open();
-
-                // Aggiorna l'ordine per ogni spesa
-                for (int i = 0; i < listaSpese.Count; i++)
+                string query = "ALTER TABLE gestore_spese AUTO_INCREMENT = 1";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
-                    string updateQuery = "UPDATE gestore_spese SET ordine = @ordine WHERE id = @id";
-                    using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, conn))
-                    {
-                        updateCmd.Parameters.AddWithValue("@ordine", i);
-                        updateCmd.Parameters.AddWithValue("@id", listaSpese[i].Id);
-                        updateCmd.ExecuteNonQuery();
-                    }
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
                 }
             }
-        }*/
+        }
+        #endregion
+
+        #region SOTTOPROGRAMMA PROSSIMO ID
+        private int ProssimoId()
+        {
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                string query = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'gestore_spese'";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    conn.Open();
+                    object result = cmd.ExecuteScalar();
+                    return result != null ? Convert.ToInt32(result) : 1;
+                }
+            }
+        }
+        #endregion
+
+        #region SOTTOPROGRAMMA ESISTE ID
+        private bool IdEsiste(int id)
+        {
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                string query = "SELECT 1 FROM gestore_spese WHERE id = @id LIMIT 1";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    conn.Open();
+                    return cmd.ExecuteScalar() != null;
+                }
+            }
+        }
         #endregion
 
         #region SOTTOPROGRAMMA SALVA BUDGET DB
@@ -442,7 +447,9 @@ namespace Progetto_Dell_Anno_2024_25
         {
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
-                string query = "INSERT INTO gestore_spese (categoria, importo, data) VALUES (@categoria, @importo, @data); SELECT LAST_INSERT_ID();";
+                // Query semplificata che fa generare l'ID automaticamente
+                string query = "INSERT INTO gestore_spese (categoria, importo, data) VALUES (@categoria, @importo, @data)";
+
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@categoria", spesa.Categoria);
@@ -450,6 +457,10 @@ namespace Progetto_Dell_Anno_2024_25
                     cmd.Parameters.AddWithValue("@data", spesa.Data);
 
                     conn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    // Ottieni l'ID appena inserito
+                    cmd.CommandText = "SELECT LAST_INSERT_ID()";
                     spesa.Id = Convert.ToInt32(cmd.ExecuteScalar());
                 }
             }
@@ -462,7 +473,11 @@ namespace Progetto_Dell_Anno_2024_25
             listaSpese.Clear();
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
-                string query = "SELECT id, categoria, importo, data FROM gestore_spese WHERE MONTH(data) = MONTH(CURRENT_DATE()) AND YEAR(data) = YEAR(CURRENT_DATE());";
+                string query = "SELECT id, categoria, importo, data FROM gestore_spese " +
+                             "WHERE MONTH(data) = MONTH(CURRENT_DATE()) " +
+                             "AND YEAR(data) = YEAR(CURRENT_DATE()) " +
+                             "ORDER BY data DESC"; // Aggiunto ordinamento per data
+
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     conn.Open();
@@ -470,24 +485,18 @@ namespace Progetto_Dell_Anno_2024_25
                     {
                         while (reader.Read())
                         {
-                            Spesa s = new Spesa
+                            listaSpese.Add(new Spesa
                             {
-                                Id = Convert.ToInt32(reader["id"]), // Aggiunto questa linea
+                                Id = Convert.ToInt32(reader["id"]),
                                 Categoria = reader["categoria"].ToString(),
                                 Importo = Convert.ToDecimal(reader["importo"]),
                                 Data = Convert.ToDateTime(reader["data"])
-                            };
-                            listaSpese.Add(s);
+                            });
                         }
                     }
                 }
             }
-
-            // Aggiorna il totale delle spese mensili
-            speseMensili = listaSpese
-                .Where(s => s.Data.Month == DateTime.Now.Month && s.Data.Year == DateTime.Now.Year)
-                .Sum(s => s.Importo);
-
+            speseMensili = listaSpese.Sum(s => s.Importo);
             AggiornaTabella();
             AggiornaBudgetLabel();
         }
