@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Globalization;
 using MySql.Data.MySqlClient;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace Progetto_Dell_Anno_2024_25
 {
@@ -15,7 +16,7 @@ namespace Progetto_Dell_Anno_2024_25
         private Dictionary<int, decimal> budgetMensilePerMese = new Dictionary<int, decimal>();
         private decimal budgetMensile;
         private decimal speseMensili = 0;
-        string connStr = "server=localhost;database=guardian_of_the_money;user=root;password=root;";
+        string connStr = "server=localhost;database=guardian_of_the_money;user=Luca_Tons;password=spese@2025;";
 
         public DashBoard()
         {
@@ -25,6 +26,7 @@ namespace Progetto_Dell_Anno_2024_25
             InizializzaListView();
             CaricaSpeseDalDatabase();
             CaricaBudgetDalDatabase();
+            GeneraReportAnnuale();
         }
 
         #region BOTTONE AGGIUNGI SPESA
@@ -293,7 +295,7 @@ namespace Progetto_Dell_Anno_2024_25
                             }
                             MessageBox.Show("Spesa eliminata con successo!", "SUCCESSO", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
-                    } 
+                    }
                 }
             }
             catch (Exception ex)
@@ -303,8 +305,8 @@ namespace Progetto_Dell_Anno_2024_25
         }
         #endregion
 
-        #region BOTTONE SCARICA REPORT
-        private void button_ScaricaReport_Click(object sender, EventArgs e)
+        #region BOTTONE SCARICA REPORT MENSILE
+        private void button_ScaricaReportMensile_Click(object sender, EventArgs e)
         {
             if (comboBox_Mesi.SelectedIndex == -1)
             {
@@ -362,7 +364,7 @@ namespace Progetto_Dell_Anno_2024_25
                 return;
             }
             string percorsoProgetto = ("../../File");
-            string percorsoFile = Path.Combine(percorsoProgetto, $"Report_{nomeMese}.csv");
+            string percorsoFile = Path.Combine(percorsoProgetto, $"Report_{nomeMese}_{annoCorrente}.csv");
             using (StreamWriter sw = new StreamWriter(percorsoFile))
             {
                 sw.WriteLine("Categoria,Importo,Data");
@@ -371,14 +373,94 @@ namespace Progetto_Dell_Anno_2024_25
                     sw.WriteLine($"{spesa.Categoria},{spesa.Importo},{spesa.Data:dd/MM/yyyy}");
                 }
                 sw.WriteLine();
-                sw.WriteLine($"Totale spese,{speseMese.Sum(s => s.Importo)}");
+                sw.WriteLine($"TOTALE SPESE: {speseMese.Sum(s => s.Importo)}");
                 if (budgetImpostato)
                 {
-                    sw.WriteLine($"Budget impostato,{budgetMese}");
-                    sw.WriteLine($"Saldo,{budgetMese - speseMese.Sum(s => s.Importo)}");
+                    sw.WriteLine($"BUDGET MENSILE:{budgetMese}");
+                    sw.WriteLine($"RIMANENZA/PERDITA: {budgetMese - speseMese.Sum(s => s.Importo)}");
                 }
             }
             MessageBox.Show("Report salvato con successo", "Successo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        #endregion
+
+        #region BOTTONE SCARICA REPORT ANNUALE
+        private void button_ScaricaReportAnnuale_Click(object sender, EventArgs e)
+        {
+            int annoCorrente = DateTime.Now.Year;
+            Dictionary<int, decimal> spesePerMese = new Dictionary<int, decimal>();
+            Dictionary<int, decimal> budgetPerMese = new Dictionary<int, decimal>();
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                string query = @"SELECT MONTH(data) AS mese, SUM(importo) AS totale FROM gestore_spese WHERE YEAR(data) = @anno GROUP BY MONTH(data)";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@anno", annoCorrente);
+                    conn.Open();
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int mese = Convert.ToInt32(reader["mese"]);
+                            decimal totale = Convert.ToDecimal(reader["totale"]);
+                            spesePerMese[mese] = totale;
+                        }
+                    }
+                }
+            }
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                string query = @"SELECT mese, importo FROM budget_mensili WHERE anno = @anno";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@anno", annoCorrente);
+                    conn.Open();
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int mese = Convert.ToInt32(reader["mese"]);
+                            decimal importo = Convert.ToDecimal(reader["importo"]);
+                            budgetPerMese[mese] = importo;
+                        }
+                    }
+                }
+            }
+            if (spesePerMese.Count == 0 && budgetPerMese.Count == 0)
+            {
+                MessageBox.Show("Nessun dato disponibile per generare il report annuale!", "Attenzione", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            string percorsoProgetto = ("../../File");
+            string percorsoFile = Path.Combine(percorsoProgetto, $"Report_Annuale_{annoCorrente}.csv");
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(percorsoFile))
+                {
+                    sw.WriteLine("Mese,Anno,Budget,Spese,Rimanenza/Perdita");
+                    decimal speseTotaliAnno = 0;
+                    decimal budgetTotaleAnno = 0;
+                    for (int mese = 1; mese <= 12; mese++)
+                    {
+                        string nomeMese = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(mese);
+                        decimal speseMese = spesePerMese.ContainsKey(mese) ? spesePerMese[mese] : 0;
+                        decimal budgetMese = budgetPerMese.ContainsKey(mese) ? budgetPerMese[mese] : 0;
+                        decimal saldoMese = budgetMese - speseMese;
+                        sw.WriteLine($"{nomeMese},{annoCorrente},{budgetMese},{speseMese},{saldoMese}");
+                        speseTotaliAnno += speseMese;
+                        budgetTotaleAnno += budgetMese;
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine($"TOTALE ANNUALE: {speseTotaliAnno}");
+                    sw.WriteLine($"TOTALE BUDGET ANNUALE: {budgetTotaleAnno}");
+                    sw.WriteLine($"RIMANENZA/PERDITA: {budgetTotaleAnno - speseTotaliAnno}");
+                }
+                MessageBox.Show($"Report annuale {annoCorrente} salvato con successo!", "Successo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante il salvataggio del report: {ex.Message}", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         #endregion
 
@@ -419,6 +501,7 @@ namespace Progetto_Dell_Anno_2024_25
                 speseMensili = totaleSpeseMese;
             }
             AggiornaBudgetLabel();
+            GeneraReportAnnuale();
             textBox_Budget.Clear();
             string nomeMese = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(meseSelezionato);
             MessageBox.Show($"Budget per il mese di {nomeMese}: {nuovoBudget:C}\n" + $"Spese già registrate: {totaleSpeseMese:C}\n" + $"Saldo aggiornato: {(nuovoBudget - totaleSpeseMese):C}", "SUCCESSO", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -444,8 +527,12 @@ namespace Progetto_Dell_Anno_2024_25
             Visualizza_Spese.Columns.Add("Importo", 100);
             Visualizza_Spese.Columns.Add("Data", 100);
             listView_ReportAnnuale.View = View.Details;
-            listView_ReportAnnuale.Columns.Add("Mese", 100);
-            listView_ReportAnnuale.Columns.Add("Anno", 100);
+            listView_ReportAnnuale.OwnerDraw = true;
+            listView_ReportAnnuale.DrawColumnHeader += ListView_ReportAnnuale_DrawColumnHeader;
+            listView_ReportAnnuale.DrawSubItem += ListView_ReportAnnuale_DrawSubItem;
+            listView_ReportAnnuale.Columns.Add("Mese", 90);
+            listView_ReportAnnuale.Columns.Add("Anno", 75);
+            listView_ReportAnnuale.Columns.Add("Budget", 100);
             listView_ReportAnnuale.Columns.Add("Spese", 100);
             listView_ReportMensile.View = View.Details;
             listView_ReportMensile.Columns.Add("Categoria", 100);
@@ -461,7 +548,7 @@ namespace Progetto_Dell_Anno_2024_25
             listView_ReportMensile.SelectedIndexChanged += listView_ReportMensile_SelectedIndexChanged;
             comboBox_Mesi.SelectedIndexChanged += comboBox_Mesi_SelectedIndexChanged;
             Visualizza_Spese.SelectedIndexChanged += Visualizza_Spese_SelectedIndexChanged;
-        }        
+        }
         #endregion
 
         #region AGGIORNA LISTVIEW
@@ -479,8 +566,8 @@ namespace Progetto_Dell_Anno_2024_25
             }
             for (int i = 0; i < speseDelMese.Count; i++)
             {
-                ListViewItem item = new ListViewItem(speseDelMese[i].Categoria);                
-                item.SubItems.Add(speseDelMese[i].Importo.ToString("C")); // "C" = valuta
+                ListViewItem item = new ListViewItem(speseDelMese[i].Categoria);
+                item.SubItems.Add(speseDelMese[i].Importo.ToString("C"));
                 item.SubItems.Add(speseDelMese[i].Data.ToShortDateString());
                 Visualizza_Spese.Items.Add(item);
             }
@@ -545,6 +632,41 @@ namespace Progetto_Dell_Anno_2024_25
                 MessageBox.Show($"Errore durante il caricamento dei dati: {ex.Message}", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void ListView_ReportAnnuale_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
+        {
+            e.DrawDefault = true;
+        }
+
+        private void ListView_ReportAnnuale_DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
+        {
+            e.DrawBackground();
+            if (e.ColumnIndex == 3)
+            {
+                if (e.Item != null && e.Item.SubItems.Count > 4)
+                {
+                    if (decimal.TryParse(e.Item.SubItems[2].Text.Replace("€", "").Replace("$", "").Trim(), NumberStyles.Currency, CultureInfo.CurrentCulture, out decimal budget) && decimal.TryParse(e.SubItem.Text.Replace("€", "").Replace("$", "").Trim(), NumberStyles.Currency, CultureInfo.CurrentCulture, out decimal spese))
+                    {
+                        Brush brush;
+                        if (spese > budget)
+                        {
+                            brush = Brushes.Red;
+                        }
+                        else if (spese < budget)
+                        {
+                            brush = Brushes.Green;
+                        }
+                        else
+                        {
+                            brush = Brushes.Black;
+                        }
+                        e.Graphics.DrawString(e.SubItem.Text, e.SubItem.Font, brush, e.Bounds, StringFormat.GenericDefault);
+                        return;
+                    }
+                }
+            }
+            e.DrawText();
+        }
         #endregion
 
         #region AGGIORNA LABEL BUDGET
@@ -554,12 +676,14 @@ namespace Progetto_Dell_Anno_2024_25
             if (budgetMensilePerMese.ContainsKey(meseCorrente))
             {
                 decimal budget = budgetMensilePerMese[meseCorrente];
-                decimal saldo = budget - speseMensili;
-                label_Budget.Text = $"Budget del mese di {DateTime.Now.ToString("MMMM")}: {budget:C} | Saldo: {saldo:C}";
+                decimal Rimanenza_perdita = budget - speseMensili;
+                label_Budget.Text = $"Budget del mese di {DateTime.Now.ToString("MMMM")}: {budget:C}";
+                label_RimanentePerdita.Text = $"Rimanenza/Perdita: {Rimanenza_perdita:C}";
             }
             else
             {
                 label_Budget.Text = "Nessun budget impostato per questo mese!";
+                label_RimanentePerdita.Text = "Nessuna spesa inserita!";
             }
         }
         #endregion
@@ -570,31 +694,116 @@ namespace Progetto_Dell_Anno_2024_25
             listView_ReportAnnuale.Items.Clear();
             int annoCorrente = DateTime.Now.Year;
             decimal saldoTotale = 0m;
+            Dictionary<int, decimal> budgetPerMese = new Dictionary<int, decimal>();
+            Dictionary<int, decimal> spesePerMese = new Dictionary<int, decimal>();
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                string budgetQuery = @"SELECT mese, importo FROM budget_mensili WHERE anno = @anno";
+                using (MySqlCommand budgetCmd = new MySqlCommand(budgetQuery, conn))
+                {
+                    budgetCmd.Parameters.AddWithValue("@anno", annoCorrente);
+                    conn.Open();
+                    using (MySqlDataReader budgetReader = budgetCmd.ExecuteReader())
+                    {
+                        while (budgetReader.Read())
+                        {
+                            int mese = Convert.ToInt32(budgetReader["mese"]);
+                            decimal importo = Convert.ToDecimal(budgetReader["importo"]);
+                            budgetPerMese[mese] = importo;
+                        }
+                    }
+                }
+            }
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                string speseQuery = @"SELECT MONTH(data) as mese, SUM(importo) as totale FROM gestore_spese WHERE YEAR(data) = @anno GROUP BY MONTH(data)";
+                using (MySqlCommand speseCmd = new MySqlCommand(speseQuery, conn))
+                {
+                    speseCmd.Parameters.AddWithValue("@anno", annoCorrente);
+                    conn.Open();
+                    using (MySqlDataReader speseReader = speseCmd.ExecuteReader())
+                    {
+                        while (speseReader.Read())
+                        {
+                            int mese = Convert.ToInt32(speseReader["mese"]);
+                            decimal totale = Convert.ToDecimal(speseReader["totale"]);
+                            spesePerMese[mese] = totale;
+                            saldoTotale += totale;
+                        }
+                    }
+                }
+            }
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 conn.Open();
                 for (int mese = 1; mese <= 12; mese++)
                 {
-                    string sumQuery = @"SELECT IFNULL(SUM(importo),0) FROM gestore_spese WHERE MONTH(data) = @mese AND YEAR(data) = @anno";
-                    decimal totaleMese = 0m;
-                    using (var sumCmd = new MySqlCommand(sumQuery, conn))
-                    {
-                        sumCmd.Parameters.AddWithValue("@mese", mese);
-                        sumCmd.Parameters.AddWithValue("@anno", annoCorrente);
-                        totaleMese = Convert.ToDecimal(sumCmd.ExecuteScalar());
-                    }
-                    saldoTotale += totaleMese;
                     string nomeMese = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(mese);
+                    decimal budgetMese = budgetPerMese.ContainsKey(mese) ? budgetPerMese[mese] : 0m;
+                    decimal totaleMese = spesePerMese.ContainsKey(mese) ? spesePerMese[mese] : 0m;
+                    decimal differenza = budgetMese - totaleMese;
                     var item = new ListViewItem(new string[]
                     {
                         nomeMese,
                         annoCorrente.ToString(),
-                        totaleMese.ToString("C")
+                        budgetMese.ToString("C"),
+                        totaleMese.ToString("C"),
+                        differenza.ToString("C")
                     });
+                    if (differenza < 0)
+                    {
+                        item.SubItems[3].ForeColor = Color.Red;
+                    }
+                    else if (differenza > 0)
+                    {
+                        item.SubItems[3].ForeColor = Color.Green;
+                    }
                     listView_ReportAnnuale.Items.Add(item);
                 }
             }
             label_SaldoAnnuale.Text = $"SPESE ANNUALI: {saldoTotale:C}";
+            chart_ReportAnnuale.Series.Clear();
+            chart_ReportAnnuale.Legends.Clear();
+            chart_ReportAnnuale.Titles.Clear();
+            Series serieSpese = new Series("Spese");
+            serieSpese.ChartType = SeriesChartType.Column;
+            serieSpese.Color = Color.Red;
+            serieSpese.XValueType = ChartValueType.String;
+            Series serieBudget = new Series("Budget");
+            serieBudget.ChartType = SeriesChartType.Column;
+            serieBudget.Color = Color.MediumSpringGreen;
+            serieBudget.XValueType = ChartValueType.String;
+            for (int mese = 1; mese <= 12; mese++)
+            {
+                string nomeMese = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(mese);
+                double totaleSpese = spesePerMese.ContainsKey(mese) ? (double)spesePerMese[mese] : 0;
+                double totaleBudget = budgetPerMese.ContainsKey(mese) ? (double)budgetPerMese[mese] : 0;
+                serieSpese.Points.AddXY(nomeMese, totaleSpese);
+                serieBudget.Points.AddXY(nomeMese, totaleBudget);
+            }
+            chart_ReportAnnuale.Series.Add(serieSpese);
+            chart_ReportAnnuale.Series.Add(serieBudget);
+            for (int i = 0; i < serieSpese.Points.Count; i++)
+            {
+                serieSpese.Points[i].ToolTip = $"Spese: {serieSpese.Points[i].YValues[0]:C}";
+            }
+            for (int i = 0; i < serieBudget.Points.Count; i++)
+            {
+                serieBudget.Points[i].ToolTip = $"Budget: {serieBudget.Points[i].YValues[0]:C}";
+            }
+            Legend legenda = new Legend();
+            legenda.Docking = Docking.Bottom;
+            legenda.Alignment = StringAlignment.Center;
+            chart_ReportAnnuale.Legends.Add(legenda);
+            chart_ReportAnnuale.ChartAreas[0].AxisX.Title = "Mese";
+            chart_ReportAnnuale.ChartAreas[0].AxisY.Title = "Importo (€)";
+            chart_ReportAnnuale.ChartAreas[0].AxisX.Interval = 1;
+            chart_ReportAnnuale.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+            chart_ReportAnnuale.ChartAreas[0].AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Dash;
+            chart_ReportAnnuale.Titles.Add("Confronto Spese e Budget Annuale");
+            chart_ReportAnnuale.Titles[0].Font = new Font("Arial", 10, FontStyle.Bold);
+            serieSpese["PointWidth"] = "0.4";
+            serieBudget["PointWidth"] = "0.4";
         }
         #endregion
 
@@ -755,21 +964,31 @@ namespace Progetto_Dell_Anno_2024_25
                 if (!Spese)
                 {
                     label_TotaleReportMese.Text = "Nessuna spesa registrata per questo mese";
+                    label_TotaleReportMese.ForeColor = Color.Black;
                 }
                 else
                 {
                     label_TotaleReportMese.Text = $"Totale spese {nomeMese}: {totaleSpeseMese:C}";
+                    decimal Rimanenza_perdita = budgetImpostato ? (budgetMese - totaleSpeseMese) : 0;
+                    if (Rimanenza_perdita < 0)
+                    {
+                        label_TotaleReportMese.ForeColor = Color.Red;
+                    }
+                    else
+                    {
+                        label_TotaleReportMese.ForeColor = Color.Green;
+                    }
                 }
                 if (budgetImpostato)
                 {
-                    decimal saldo = budgetMese - totaleSpeseMese;
-                    label_BudgetReportMensile.Text = $"Budget {nomeMese}: {budgetMese:C} | Saldo: {saldo:C}";
-                    label_BudgetReportMensile.Visible = true;
+                    decimal Rimanenza_perdita = budgetMese - totaleSpeseMese;
+                    label_BudgetReportMensile.Text = $"Budget {nomeMese}: {budgetMese:C}";
+                    label_RimanenzaPerditaReportMensile.Text = $"Rimanenza/Perdita: {Rimanenza_perdita:C}";
                 }
                 else
                 {
                     label_BudgetReportMensile.Text = $"Nessun budget impostato per {nomeMese}";
-                    label_BudgetReportMensile.Visible = true;
+                    label_RimanenzaPerditaReportMensile.Text = $"Nessuna spesa inserita!";
                 }
             }
             catch (Exception ex)

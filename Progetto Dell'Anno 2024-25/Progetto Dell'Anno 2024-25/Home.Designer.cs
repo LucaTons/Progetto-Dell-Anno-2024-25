@@ -62,7 +62,7 @@ namespace Progetto_Dell_Anno_2024_25
             this.button_Inizio.Name = "button_Inizio";
             this.button_Inizio.Size = new System.Drawing.Size(345, 186);
             this.button_Inizio.TabIndex = 7;
-            this.button_Inizio.Text = "INIZIA";
+            this.button_Inizio.Text = "AVVIA";
             this.button_Inizio.UseVisualStyleBackColor = false;
             this.button_Inizio.Visible = false;
             this.button_Inizio.Click += new System.EventHandler(this.button_Inizio_Click);
