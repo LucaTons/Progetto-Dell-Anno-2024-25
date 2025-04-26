@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DashBoard));
             this.tabControlOperazioni = new System.Windows.Forms.TabControl();
             this.tabPageImpostazioni = new System.Windows.Forms.TabPage();
+            this.comboBox_MesiBudget = new System.Windows.Forms.ComboBox();
             this.label_ImpostaBudget = new System.Windows.Forms.Label();
             this.textBox_Budget = new System.Windows.Forms.TextBox();
             this.button_ImpostaBudget = new System.Windows.Forms.Button();
@@ -41,6 +42,9 @@
             this.DataTimePicker_Data = new System.Windows.Forms.DateTimePicker();
             this.button_Aggiungi = new System.Windows.Forms.Button();
             this.tabPageVisualizza = new System.Windows.Forms.TabPage();
+            this.textBox_Importo = new System.Windows.Forms.TextBox();
+            this.comboBox_Categorie = new System.Windows.Forms.ComboBox();
+            this.dateTimePicker_Data = new System.Windows.Forms.DateTimePicker();
             this.label_Budget = new System.Windows.Forms.Label();
             this.button_EliminaSpesa = new System.Windows.Forms.Button();
             this.button_ModificaSpesa = new System.Windows.Forms.Button();
@@ -48,21 +52,27 @@
             this.label_Visualizza = new System.Windows.Forms.Label();
             this.Visualizza_Spese = new System.Windows.Forms.ListView();
             this.tabPageReport = new System.Windows.Forms.TabPage();
+            this.label_BudgetReportMensile = new System.Windows.Forms.Label();
+            this.label_TotaleReportMese = new System.Windows.Forms.Label();
+            this.button_EliminaReportMensile = new System.Windows.Forms.Button();
+            this.button_ModificaReportMensile = new System.Windows.Forms.Button();
+            this.textBox_ReportMensile = new System.Windows.Forms.TextBox();
+            this.comboBox_CategorieReportMensile = new System.Windows.Forms.ComboBox();
+            this.dateTimePicker_DataReportMensile = new System.Windows.Forms.DateTimePicker();
+            this.listView_ReportMensile = new System.Windows.Forms.ListView();
             this.button_ScaricaReport = new System.Windows.Forms.Button();
             this.label_Report = new System.Windows.Forms.Label();
             this.comboBox_Mesi = new System.Windows.Forms.ComboBox();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.toolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripComboBox_CambioTema = new System.Windows.Forms.ToolStripComboBox();
-            this.textBox_Importo = new System.Windows.Forms.TextBox();
-            this.comboBox_Categorie = new System.Windows.Forms.ComboBox();
-            this.dateTimePicker_Data = new System.Windows.Forms.DateTimePicker();
+            this.tabPage_ReportAnnuale = new System.Windows.Forms.TabPage();
+            this.label_SaldoAnnuale = new System.Windows.Forms.Label();
+            this.label_ReportAnnuale = new System.Windows.Forms.Label();
+            this.listView_ReportAnnuale = new System.Windows.Forms.ListView();
             this.tabControlOperazioni.SuspendLayout();
             this.tabPageImpostazioni.SuspendLayout();
             this.tabPageAggiungi.SuspendLayout();
             this.tabPageVisualizza.SuspendLayout();
             this.tabPageReport.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
+            this.tabPage_ReportAnnuale.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControlOperazioni
@@ -71,6 +81,7 @@
             this.tabControlOperazioni.Controls.Add(this.tabPageAggiungi);
             this.tabControlOperazioni.Controls.Add(this.tabPageVisualizza);
             this.tabControlOperazioni.Controls.Add(this.tabPageReport);
+            this.tabControlOperazioni.Controls.Add(this.tabPage_ReportAnnuale);
             this.tabControlOperazioni.Location = new System.Drawing.Point(0, 27);
             this.tabControlOperazioni.Name = "tabControlOperazioni";
             this.tabControlOperazioni.SelectedIndex = 0;
@@ -79,6 +90,7 @@
             // 
             // tabPageImpostazioni
             // 
+            this.tabPageImpostazioni.Controls.Add(this.comboBox_MesiBudget);
             this.tabPageImpostazioni.Controls.Add(this.label_ImpostaBudget);
             this.tabPageImpostazioni.Controls.Add(this.textBox_Budget);
             this.tabPageImpostazioni.Controls.Add(this.button_ImpostaBudget);
@@ -89,6 +101,14 @@
             this.tabPageImpostazioni.TabIndex = 3;
             this.tabPageImpostazioni.Text = "Imposta Budget";
             this.tabPageImpostazioni.UseVisualStyleBackColor = true;
+            // 
+            // comboBox_MesiBudget
+            // 
+            this.comboBox_MesiBudget.FormattingEnabled = true;
+            this.comboBox_MesiBudget.Location = new System.Drawing.Point(987, 268);
+            this.comboBox_MesiBudget.Name = "comboBox_MesiBudget";
+            this.comboBox_MesiBudget.Size = new System.Drawing.Size(149, 24);
+            this.comboBox_MesiBudget.TabIndex = 5;
             // 
             // label_ImpostaBudget
             // 
@@ -102,14 +122,14 @@
             // 
             // textBox_Budget
             // 
-            this.textBox_Budget.Location = new System.Drawing.Point(1003, 275);
+            this.textBox_Budget.Location = new System.Drawing.Point(1012, 315);
             this.textBox_Budget.Name = "textBox_Budget";
             this.textBox_Budget.Size = new System.Drawing.Size(100, 22);
             this.textBox_Budget.TabIndex = 1;
             // 
             // button_ImpostaBudget
             // 
-            this.button_ImpostaBudget.Location = new System.Drawing.Point(1003, 324);
+            this.button_ImpostaBudget.Location = new System.Drawing.Point(1012, 359);
             this.button_ImpostaBudget.Name = "button_ImpostaBudget";
             this.button_ImpostaBudget.Size = new System.Drawing.Size(100, 54);
             this.button_ImpostaBudget.TabIndex = 0;
@@ -193,6 +213,31 @@
             this.tabPageVisualizza.Text = "Visualizza Spese";
             this.tabPageVisualizza.UseVisualStyleBackColor = true;
             // 
+            // textBox_Importo
+            // 
+            this.textBox_Importo.Enabled = false;
+            this.textBox_Importo.Location = new System.Drawing.Point(112, 264);
+            this.textBox_Importo.Name = "textBox_Importo";
+            this.textBox_Importo.Size = new System.Drawing.Size(250, 22);
+            this.textBox_Importo.TabIndex = 12;
+            // 
+            // comboBox_Categorie
+            // 
+            this.comboBox_Categorie.Enabled = false;
+            this.comboBox_Categorie.FormattingEnabled = true;
+            this.comboBox_Categorie.Location = new System.Drawing.Point(112, 221);
+            this.comboBox_Categorie.Name = "comboBox_Categorie";
+            this.comboBox_Categorie.Size = new System.Drawing.Size(250, 24);
+            this.comboBox_Categorie.TabIndex = 10;
+            // 
+            // dateTimePicker_Data
+            // 
+            this.dateTimePicker_Data.Enabled = false;
+            this.dateTimePicker_Data.Location = new System.Drawing.Point(112, 304);
+            this.dateTimePicker_Data.Name = "dateTimePicker_Data";
+            this.dateTimePicker_Data.Size = new System.Drawing.Size(250, 22);
+            this.dateTimePicker_Data.TabIndex = 11;
+            // 
             // label_Budget
             // 
             this.label_Budget.AutoSize = true;
@@ -257,6 +302,14 @@
             // 
             // tabPageReport
             // 
+            this.tabPageReport.Controls.Add(this.label_BudgetReportMensile);
+            this.tabPageReport.Controls.Add(this.label_TotaleReportMese);
+            this.tabPageReport.Controls.Add(this.button_EliminaReportMensile);
+            this.tabPageReport.Controls.Add(this.button_ModificaReportMensile);
+            this.tabPageReport.Controls.Add(this.textBox_ReportMensile);
+            this.tabPageReport.Controls.Add(this.comboBox_CategorieReportMensile);
+            this.tabPageReport.Controls.Add(this.dateTimePicker_DataReportMensile);
+            this.tabPageReport.Controls.Add(this.listView_ReportMensile);
             this.tabPageReport.Controls.Add(this.button_ScaricaReport);
             this.tabPageReport.Controls.Add(this.label_Report);
             this.tabPageReport.Controls.Add(this.comboBox_Mesi);
@@ -268,9 +321,79 @@
             this.tabPageReport.Text = "Report Mensile";
             this.tabPageReport.UseVisualStyleBackColor = true;
             // 
+            // label_BudgetReportMensile
+            // 
+            this.label_BudgetReportMensile.AutoSize = true;
+            this.label_BudgetReportMensile.Location = new System.Drawing.Point(1221, 217);
+            this.label_BudgetReportMensile.Name = "label_BudgetReportMensile";
+            this.label_BudgetReportMensile.Size = new System.Drawing.Size(108, 17);
+            this.label_BudgetReportMensile.TabIndex = 20;
+            this.label_BudgetReportMensile.Text = "Nessun Budget!";
+            // 
+            // label_TotaleReportMese
+            // 
+            this.label_TotaleReportMese.AutoSize = true;
+            this.label_TotaleReportMese.Location = new System.Drawing.Point(1221, 176);
+            this.label_TotaleReportMese.Name = "label_TotaleReportMese";
+            this.label_TotaleReportMese.Size = new System.Drawing.Size(173, 17);
+            this.label_TotaleReportMese.TabIndex = 19;
+            this.label_TotaleReportMese.Text = "Nessun mese selezionato!";
+            // 
+            // button_EliminaReportMensile
+            // 
+            this.button_EliminaReportMensile.Location = new System.Drawing.Point(384, 318);
+            this.button_EliminaReportMensile.Name = "button_EliminaReportMensile";
+            this.button_EliminaReportMensile.Size = new System.Drawing.Size(120, 48);
+            this.button_EliminaReportMensile.TabIndex = 18;
+            this.button_EliminaReportMensile.Text = "ELIMINA";
+            this.button_EliminaReportMensile.UseVisualStyleBackColor = true;
+            this.button_EliminaReportMensile.Click += new System.EventHandler(this.button_EliminaReportMensile_Click);
+            // 
+            // button_ModificaReportMensile
+            // 
+            this.button_ModificaReportMensile.Location = new System.Drawing.Point(254, 318);
+            this.button_ModificaReportMensile.Name = "button_ModificaReportMensile";
+            this.button_ModificaReportMensile.Size = new System.Drawing.Size(112, 48);
+            this.button_ModificaReportMensile.TabIndex = 17;
+            this.button_ModificaReportMensile.Text = "MODIFICA";
+            this.button_ModificaReportMensile.UseVisualStyleBackColor = true;
+            this.button_ModificaReportMensile.Click += new System.EventHandler(this.button_ModificaReportMensile_Click);
+            // 
+            // textBox_ReportMensile
+            // 
+            this.textBox_ReportMensile.Location = new System.Drawing.Point(254, 235);
+            this.textBox_ReportMensile.Name = "textBox_ReportMensile";
+            this.textBox_ReportMensile.Size = new System.Drawing.Size(250, 22);
+            this.textBox_ReportMensile.TabIndex = 16;
+            // 
+            // comboBox_CategorieReportMensile
+            // 
+            this.comboBox_CategorieReportMensile.FormattingEnabled = true;
+            this.comboBox_CategorieReportMensile.Location = new System.Drawing.Point(254, 192);
+            this.comboBox_CategorieReportMensile.Name = "comboBox_CategorieReportMensile";
+            this.comboBox_CategorieReportMensile.Size = new System.Drawing.Size(250, 24);
+            this.comboBox_CategorieReportMensile.TabIndex = 14;
+            // 
+            // dateTimePicker_DataReportMensile
+            // 
+            this.dateTimePicker_DataReportMensile.Location = new System.Drawing.Point(254, 275);
+            this.dateTimePicker_DataReportMensile.Name = "dateTimePicker_DataReportMensile";
+            this.dateTimePicker_DataReportMensile.Size = new System.Drawing.Size(250, 22);
+            this.dateTimePicker_DataReportMensile.TabIndex = 15;
+            // 
+            // listView_ReportMensile
+            // 
+            this.listView_ReportMensile.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.listView_ReportMensile.HideSelection = false;
+            this.listView_ReportMensile.Location = new System.Drawing.Point(640, 156);
+            this.listView_ReportMensile.Name = "listView_ReportMensile";
+            this.listView_ReportMensile.Size = new System.Drawing.Size(501, 373);
+            this.listView_ReportMensile.TabIndex = 7;
+            this.listView_ReportMensile.UseCompatibleStateImageBehavior = false;
+            // 
             // button_ScaricaReport
             // 
-            this.button_ScaricaReport.Location = new System.Drawing.Point(938, 333);
+            this.button_ScaricaReport.Location = new System.Drawing.Point(1224, 263);
             this.button_ScaricaReport.Name = "button_ScaricaReport";
             this.button_ScaricaReport.Size = new System.Drawing.Size(144, 23);
             this.button_ScaricaReport.TabIndex = 6;
@@ -282,68 +405,62 @@
             // 
             this.label_Report.AutoSize = true;
             this.label_Report.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.2F, System.Drawing.FontStyle.Bold);
-            this.label_Report.Location = new System.Drawing.Point(695, 224);
+            this.label_Report.Location = new System.Drawing.Point(689, 68);
             this.label_Report.Name = "label_Report";
-            this.label_Report.Size = new System.Drawing.Size(645, 25);
+            this.label_Report.Size = new System.Drawing.Size(393, 25);
             this.label_Report.TabIndex = 5;
-            this.label_Report.Text = "SELEZIONA IL MESE DEL REPORT CHE VUOI SCARICARE:";
+            this.label_Report.Text = "SELEZIONA IL MESE DEL REPORT:";
             // 
             // comboBox_Mesi
             // 
             this.comboBox_Mesi.FormattingEnabled = true;
-            this.comboBox_Mesi.Location = new System.Drawing.Point(882, 282);
+            this.comboBox_Mesi.Location = new System.Drawing.Point(759, 112);
             this.comboBox_Mesi.Name = "comboBox_Mesi";
             this.comboBox_Mesi.Size = new System.Drawing.Size(250, 24);
             this.comboBox_Mesi.TabIndex = 2;
+            this.comboBox_Mesi.SelectedIndexChanged += new System.EventHandler(this.comboBox_Mesi_SelectedIndexChanged);
             // 
-            // menuStrip1
+            // tabPage_ReportAnnuale
             // 
-            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1680, 28);
-            this.menuStrip1.TabIndex = 2;
-            this.menuStrip1.Text = "menuStrip1";
+            this.tabPage_ReportAnnuale.Controls.Add(this.label_SaldoAnnuale);
+            this.tabPage_ReportAnnuale.Controls.Add(this.label_ReportAnnuale);
+            this.tabPage_ReportAnnuale.Controls.Add(this.listView_ReportAnnuale);
+            this.tabPage_ReportAnnuale.Location = new System.Drawing.Point(4, 25);
+            this.tabPage_ReportAnnuale.Name = "tabPage_ReportAnnuale";
+            this.tabPage_ReportAnnuale.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_ReportAnnuale.Size = new System.Drawing.Size(2092, 971);
+            this.tabPage_ReportAnnuale.TabIndex = 4;
+            this.tabPage_ReportAnnuale.Text = "Report Annuale";
+            this.tabPage_ReportAnnuale.UseVisualStyleBackColor = true;
             // 
-            // toolStripMenuItem
+            // label_SaldoAnnuale
             // 
-            this.toolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripComboBox_CambioTema});
-            this.toolStripMenuItem.Name = "toolStripMenuItem";
-            this.toolStripMenuItem.Size = new System.Drawing.Size(117, 24);
-            this.toolStripMenuItem.Text = "Imposta Tema";
+            this.label_SaldoAnnuale.AutoSize = true;
+            this.label_SaldoAnnuale.Location = new System.Drawing.Point(1196, 169);
+            this.label_SaldoAnnuale.Name = "label_SaldoAnnuale";
+            this.label_SaldoAnnuale.Size = new System.Drawing.Size(46, 17);
+            this.label_SaldoAnnuale.TabIndex = 4;
+            this.label_SaldoAnnuale.Text = "label1";
             // 
-            // toolStripComboBox_CambioTema
+            // label_ReportAnnuale
             // 
-            this.toolStripComboBox_CambioTema.Name = "toolStripComboBox_CambioTema";
-            this.toolStripComboBox_CambioTema.Size = new System.Drawing.Size(121, 28);
+            this.label_ReportAnnuale.AutoSize = true;
+            this.label_ReportAnnuale.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_ReportAnnuale.Location = new System.Drawing.Point(649, 97);
+            this.label_ReportAnnuale.Name = "label_ReportAnnuale";
+            this.label_ReportAnnuale.Size = new System.Drawing.Size(430, 25);
+            this.label_ReportAnnuale.TabIndex = 3;
+            this.label_ReportAnnuale.Text = "VISUALIZZA TUTTE LE SPESE ANNUALI:";
             // 
-            // textBox_Importo
+            // listView_ReportAnnuale
             // 
-            this.textBox_Importo.Enabled = false;
-            this.textBox_Importo.Location = new System.Drawing.Point(112, 264);
-            this.textBox_Importo.Name = "textBox_Importo";
-            this.textBox_Importo.Size = new System.Drawing.Size(250, 22);
-            this.textBox_Importo.TabIndex = 12;
-            // 
-            // comboBox_Categorie
-            // 
-            this.comboBox_Categorie.Enabled = false;
-            this.comboBox_Categorie.FormattingEnabled = true;
-            this.comboBox_Categorie.Location = new System.Drawing.Point(112, 221);
-            this.comboBox_Categorie.Name = "comboBox_Categorie";
-            this.comboBox_Categorie.Size = new System.Drawing.Size(250, 24);
-            this.comboBox_Categorie.TabIndex = 10;
-            // 
-            // dateTimePicker_Data
-            // 
-            this.dateTimePicker_Data.Enabled = false;
-            this.dateTimePicker_Data.Location = new System.Drawing.Point(112, 304);
-            this.dateTimePicker_Data.Name = "dateTimePicker_Data";
-            this.dateTimePicker_Data.Size = new System.Drawing.Size(250, 22);
-            this.dateTimePicker_Data.TabIndex = 11;
+            this.listView_ReportAnnuale.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.listView_ReportAnnuale.HideSelection = false;
+            this.listView_ReportAnnuale.Location = new System.Drawing.Point(620, 155);
+            this.listView_ReportAnnuale.Name = "listView_ReportAnnuale";
+            this.listView_ReportAnnuale.Size = new System.Drawing.Size(501, 373);
+            this.listView_ReportAnnuale.TabIndex = 2;
+            this.listView_ReportAnnuale.UseCompatibleStateImageBehavior = false;
             // 
             // DashBoard
             // 
@@ -351,7 +468,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1680, 624);
             this.Controls.Add(this.tabControlOperazioni);
-            this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "DashBoard";
             this.Text = "DashBoard";
@@ -365,10 +481,9 @@
             this.tabPageVisualizza.PerformLayout();
             this.tabPageReport.ResumeLayout(false);
             this.tabPageReport.PerformLayout();
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
+            this.tabPage_ReportAnnuale.ResumeLayout(false);
+            this.tabPage_ReportAnnuale.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -394,12 +509,22 @@
         private System.Windows.Forms.Button button_OrdinaPerData;
         private System.Windows.Forms.Button button_EliminaSpesa;
         private System.Windows.Forms.Button button_ModificaSpesa;
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem;
-        private System.Windows.Forms.ToolStripComboBox toolStripComboBox_CambioTema;
         private System.Windows.Forms.Label label_Budget;
         private System.Windows.Forms.TextBox textBox_Importo;
         private System.Windows.Forms.ComboBox comboBox_Categorie;
         private System.Windows.Forms.DateTimePicker dateTimePicker_Data;
+        private System.Windows.Forms.TabPage tabPage_ReportAnnuale;
+        private System.Windows.Forms.Label label_ReportAnnuale;
+        private System.Windows.Forms.ListView listView_ReportAnnuale;
+        private System.Windows.Forms.Label label_SaldoAnnuale;
+        private System.Windows.Forms.TextBox textBox_ReportMensile;
+        private System.Windows.Forms.ComboBox comboBox_CategorieReportMensile;
+        private System.Windows.Forms.DateTimePicker dateTimePicker_DataReportMensile;
+        private System.Windows.Forms.ListView listView_ReportMensile;
+        private System.Windows.Forms.Button button_EliminaReportMensile;
+        private System.Windows.Forms.Button button_ModificaReportMensile;
+        private System.Windows.Forms.Label label_TotaleReportMese;
+        private System.Windows.Forms.ComboBox comboBox_MesiBudget;
+        private System.Windows.Forms.Label label_BudgetReportMensile;
     }
 }
