@@ -432,10 +432,10 @@
             // label_Report
             // 
             this.label_Report.AutoSize = true;
-            this.label_Report.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.2F, System.Drawing.FontStyle.Bold);
-            this.label_Report.Location = new System.Drawing.Point(689, 68);
+            this.label_Report.Font = new System.Drawing.Font("Microsoft Sans Serif", 19.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_Report.Location = new System.Drawing.Point(567, 70);
             this.label_Report.Name = "label_Report";
-            this.label_Report.Size = new System.Drawing.Size(393, 25);
+            this.label_Report.Size = new System.Drawing.Size(620, 39);
             this.label_Report.TabIndex = 5;
             this.label_Report.Text = "SELEZIONA IL MESE DEL REPORT:";
             // 
@@ -501,10 +501,10 @@
             // label_ReportAnnuale
             // 
             this.label_ReportAnnuale.AutoSize = true;
-            this.label_ReportAnnuale.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_ReportAnnuale.Location = new System.Drawing.Point(321, 97);
+            this.label_ReportAnnuale.Font = new System.Drawing.Font("Microsoft Sans Serif", 19.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_ReportAnnuale.Location = new System.Drawing.Point(181, 97);
             this.label_ReportAnnuale.Name = "label_ReportAnnuale";
-            this.label_ReportAnnuale.Size = new System.Drawing.Size(430, 25);
+            this.label_ReportAnnuale.Size = new System.Drawing.Size(712, 39);
             this.label_ReportAnnuale.TabIndex = 3;
             this.label_ReportAnnuale.Text = "VISUALIZZA TUTTE LE SPESE ANNUALI:";
             // 
