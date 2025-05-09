@@ -13,7 +13,7 @@ namespace Progetto_Dell_Anno_2024_25
     public partial class DashBoard : Form
     {
         private List<Spesa> listaSpese = new List<Spesa>();
-        private Dictionary<int, decimal> budgetMensilePerMese = new Dictionary<int, decimal>();
+        private Dictionary<(int mese, int anno), decimal> budgetMensilePerMese = new Dictionary<(int, int), decimal>();
         private decimal budgetMensile;
         private decimal speseMensili = 0;
         string connStr = "server=localhost;database=guardian_of_the_money;user=Luca_Tons;password=spese@2025;";
@@ -46,18 +46,24 @@ namespace Progetto_Dell_Anno_2024_25
             DateTime dataInserita = DataTimePicker_Data.Value;
             int meseInserito = dataInserita.Month;
             int annoInserito = dataInserita.Year;
-            if (!budgetMensilePerMese.ContainsKey(meseInserito) && !budgetMensilePerMese.ContainsKey(annoInserito))
+            var chiaveBudget = (meseInserito, annoInserito);
+            if (!budgetMensilePerMese.ContainsKey(chiaveBudget))
             {
-                MessageBox.Show($"Non hai impostato il budget per il mese {dataInserita.ToString("MMMM")}!", "ERRORE", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Non hai impostato il budget per il mese di {dataInserita.ToString("MMMM yyyy")}!", "ERRORE", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 PulisciCampi();
                 return;
             }
-            budgetMensile = budgetMensilePerMese[meseInserito];
-            if (speseMensili + importo > budgetMensile)
+            budgetMensile = budgetMensilePerMese[chiaveBudget];
+            decimal totaleSpeseMese = listaSpese.Where(s => s.Data.Month == meseInserito && s.Data.Year == annoInserito).Sum(s => s.Importo);
+            decimal sommaConNuovaSpesa = totaleSpeseMese + importo;
+            if (meseInserito == DateTime.Now.Month && annoInserito == DateTime.Now.Year && sommaConNuovaSpesa > budgetMensile)
             {
                 MessageBox.Show("Hai superato il budget mensile!", "ATTENZIONE", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            speseMensili += importo;
+            if (meseInserito == DateTime.Now.Month && annoInserito == DateTime.Now.Year)
+            {
+                speseMensili += importo; // Solo aggiorno la variabile live se è il mese corrente
+            }
             Spesa nuovaSpesa = new Spesa
             {
                 Categoria = ComboBox_Categoria.SelectedItem.ToString(),
@@ -367,10 +373,14 @@ namespace Progetto_Dell_Anno_2024_25
             string percorsoFile = Path.Combine(percorsoProgetto, $"Report_{nomeMese}_{annoCorrente}.csv");
             using (StreamWriter sw = new StreamWriter(percorsoFile))
             {
-                sw.WriteLine("Categoria,Importo,Data");
-                foreach (var spesa in speseMese)
+                sw.WriteLine("Categoria;Totale Spesa");
+                var spesePerCategoria = speseMese
+                    .GroupBy(s => s.Categoria)
+                    .Select(g => new { Categoria = g.Key, Totale = g.Sum(s => s.Importo) })
+                    .ToList();
+                for (int i = 0; i < spesePerCategoria.Count; i++)
                 {
-                    sw.WriteLine($"{spesa.Categoria},{spesa.Importo},{spesa.Data:dd/MM/yyyy}");
+                    sw.WriteLine($"{spesePerCategoria[i].Categoria};{spesePerCategoria[i].Totale}");
                 }
                 sw.WriteLine();
                 sw.WriteLine($"TOTALE SPESE: {speseMese.Sum(s => s.Importo)}");
@@ -437,7 +447,7 @@ namespace Progetto_Dell_Anno_2024_25
             {
                 using (StreamWriter sw = new StreamWriter(percorsoFile))
                 {
-                    sw.WriteLine("Mese,Anno,Budget,Spese,Rimanenza/Perdita");
+                    sw.WriteLine("Mese;Anno;Budget;Spese;Rimanenza/Perdita");
                     decimal speseTotaliAnno = 0;
                     decimal budgetTotaleAnno = 0;
                     for (int mese = 1; mese <= 12; mese++)
@@ -446,7 +456,7 @@ namespace Progetto_Dell_Anno_2024_25
                         decimal speseMese = spesePerMese.ContainsKey(mese) ? spesePerMese[mese] : 0;
                         decimal budgetMese = budgetPerMese.ContainsKey(mese) ? budgetPerMese[mese] : 0;
                         decimal saldoMese = budgetMese - speseMese;
-                        sw.WriteLine($"{nomeMese},{annoCorrente},{budgetMese},{speseMese},{saldoMese}");
+                        sw.WriteLine($"{nomeMese};{annoCorrente};{budgetMese};{speseMese};{saldoMese}");
                         speseTotaliAnno += speseMese;
                         budgetTotaleAnno += budgetMese;
                     }
@@ -494,8 +504,8 @@ namespace Progetto_Dell_Anno_2024_25
                     totaleSpeseMese = Convert.ToDecimal(sumCmd.ExecuteScalar());
                 }
             }
-            budgetMensilePerMese[meseSelezionato] = nuovoBudget;
-            if (meseSelezionato == DateTime.Now.Month)
+            budgetMensilePerMese[(meseSelezionato, annoCorrente)] = nuovoBudget;
+            if (meseSelezionato == DateTime.Now.Month && annoCorrente == DateTime.Now.Year)
             {
                 budgetMensile = nuovoBudget;
                 speseMensili = totaleSpeseMese;
@@ -504,7 +514,8 @@ namespace Progetto_Dell_Anno_2024_25
             GeneraReportAnnuale();
             textBox_Budget.Clear();
             string nomeMese = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(meseSelezionato);
-            MessageBox.Show($"Budget per il mese di {nomeMese}: {nuovoBudget:C}\n" + $"Spese già registrate: {totaleSpeseMese:C}\n" + $"Saldo aggiornato: {(nuovoBudget - totaleSpeseMese):C}", "SUCCESSO", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show($"Budget per il mese di {nomeMese} {annoCorrente}: {nuovoBudget:C}\n" + $"Spese già registrate: {totaleSpeseMese:C}\n" + $"Saldo aggiornato: {(nuovoBudget - totaleSpeseMese):C}", "SUCCESSO", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
         }
         #endregion
 
@@ -672,20 +683,39 @@ namespace Progetto_Dell_Anno_2024_25
         #region AGGIORNA LABEL BUDGET
         private void AggiornaBudgetLabel()
         {
-            int meseCorrente = DateTime.Now.Month;
-            if (budgetMensilePerMese.ContainsKey(meseCorrente))
+            int mese = DateTime.Now.Month;
+            int anno = DateTime.Now.Year;
+            if (Visualizza_Spese.SelectedItems.Count > 0)
             {
-                decimal budget = budgetMensilePerMese[meseCorrente];
-                decimal Rimanenza_perdita = budget - speseMensili;
-                label_Budget.Text = $"Budget del mese di {DateTime.Now.ToString("MMMM")}: {budget:C}";
-                label_RimanentePerdita.Text = $"Rimanenza/Perdita: {Rimanenza_perdita:C}";
+                string dataText = Visualizza_Spese.SelectedItems[0].SubItems[2].Text;
+                if (DateTime.TryParse(dataText, out DateTime dataSpesa))
+                {
+                    mese = dataSpesa.Month;
+                    anno = dataSpesa.Year;
+                }
+            }
+            var chiave = (mese, anno);
+            if (budgetMensilePerMese.ContainsKey(chiave))
+            {
+                decimal budget = budgetMensilePerMese[chiave];
+                decimal totaleSpese = listaSpese
+                    .Where(s => s.Data.Month == mese && s.Data.Year == anno)
+                    .Sum(s => s.Importo);
+
+                decimal saldo = budget - totaleSpese;
+
+                label_Budget.Text = $"Budget {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(mese)} {anno}: {budget:C}";
+                label_RimanentePerdita.Text = $"Rimanenza/Perdita: {saldo:C}";
+                label_RimanentePerdita.ForeColor = saldo < 0 ? Color.Red : Color.Green;
             }
             else
             {
-                label_Budget.Text = "Nessun budget impostato per questo mese!";
-                label_RimanentePerdita.Text = "Nessuna spesa inserita!";
+                label_Budget.Text = $"Nessun budget impostato per {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(mese)} {anno}";
+                label_RimanentePerdita.Text = $"Nessuna spesa registrata!";
+                label_RimanentePerdita.ForeColor = Color.Black;
             }
         }
+
         #endregion
 
         #region SOTTOPROGRAMMA REPORT ANNUALE
@@ -762,6 +792,7 @@ namespace Progetto_Dell_Anno_2024_25
                 }
             }
             label_SaldoAnnuale.Text = $"SPESE ANNUALI: {saldoTotale:C}";
+            //Grafico a colonne
             chart_ReportAnnuale.Series.Clear();
             chart_ReportAnnuale.Legends.Clear();
             chart_ReportAnnuale.Titles.Clear();
@@ -801,9 +832,61 @@ namespace Progetto_Dell_Anno_2024_25
             chart_ReportAnnuale.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
             chart_ReportAnnuale.ChartAreas[0].AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Dash;
             chart_ReportAnnuale.Titles.Add("Confronto Spese e Budget Annuale");
-            chart_ReportAnnuale.Titles[0].Font = new Font("Arial", 10, FontStyle.Bold);
+            chart_ReportAnnuale.Titles[0].Font = new Font("Arial", 20, FontStyle.Bold);
             serieSpese["PointWidth"] = "0.4";
             serieBudget["PointWidth"] = "0.4";
+            //Grafico a torta
+            chart_CategorieAnnuali.Series.Clear();
+            chart_CategorieAnnuali.Titles.Clear();
+            chart_CategorieAnnuali.Legends.Clear();
+            chart_CategorieAnnuali.ChartAreas.Clear();
+            ChartArea chartAreaCategorie = new ChartArea("ChartAreaCategorie");
+            chartAreaCategorie.Area3DStyle.Enable3D = true;
+            chart_CategorieAnnuali.ChartAreas.Add(chartAreaCategorie);
+            Series serieCategorie = new Series("Spese per Categoria");
+            serieCategorie.ChartType = SeriesChartType.Pie;
+            serieCategorie.IsValueShownAsLabel = false;
+            serieCategorie.Font = new Font("Arial", 8);
+            serieCategorie.Legend = "LegendaCategorie";
+            List<string> categorie = new List<string>();
+            List<decimal> importi = new List<decimal>();
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                conn.Open();
+                string query = @"SELECT categoria, SUM(importo) AS totale FROM gestore_spese WHERE YEAR(data) = @anno GROUP BY categoria";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@anno", DateTime.Now.Year);
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            categorie.Add(reader["categoria"].ToString());
+                            importi.Add(Convert.ToDecimal(reader["totale"]));
+                        }
+                    }
+                }
+            }
+            Color[] colori = new Color[] { Color.SkyBlue, Color.Orange, Color.LightCoral, Color.Green, Color.DeepPink, Color.Aquamarine, Color.Lime, Color.Magenta, Color.Yellow };
+            decimal totaleAnnuale = importi.Sum();
+            for (int i = 0; i < categorie.Count; i++)
+            {
+                DataPoint punto = new DataPoint();
+                double percentuale = (double)(importi[i] / totaleAnnuale) * 100;
+                punto.YValues = new double[] { (double)importi[i] };
+                punto.Label = $"{percentuale:0.00}%";
+                punto.LegendText = $"{categorie[i]}: {importi[i]:C}";
+                punto.Color = colori[i % colori.Length];
+                serieCategorie.Points.Add(punto);
+            }
+            Legend legendaCategorie = new Legend("LegendaCategorie");
+            legendaCategorie.Docking = Docking.Left;
+            legendaCategorie.Alignment = StringAlignment.Center;
+            legendaCategorie.Font = new Font("Arial", 10, FontStyle.Regular);
+            chart_CategorieAnnuali.Legends.Add(legendaCategorie);
+            chart_CategorieAnnuali.Series.Add(serieCategorie);
+            chart_CategorieAnnuali.Titles.Add("Totale Spese Annuale per Categoria");
+            chart_CategorieAnnuali.Titles[0].Font = new Font("Arial", 20, FontStyle.Bold);
         }
         #endregion
 
@@ -889,18 +972,17 @@ namespace Progetto_Dell_Anno_2024_25
                             int mese = Convert.ToInt32(reader["mese"]);
                             int anno = Convert.ToInt32(reader["anno"]);
                             decimal importo = Convert.ToDecimal(reader["importo"]);
-                            if (anno == DateTime.Now.Year)
-                            {
-                                budgetMensilePerMese[mese] = importo;
-                            }
+                            budgetMensilePerMese[(mese, anno)] = importo;
                         }
                     }
                 }
             }
             int meseCorrente = DateTime.Now.Month;
-            if (budgetMensilePerMese.ContainsKey(meseCorrente))
+            int annoCorrente = DateTime.Now.Year;
+            var chiaveCorrente = (meseCorrente, DateTime.Now.Year);
+            if (budgetMensilePerMese.ContainsKey(chiaveCorrente))
             {
-                budgetMensile = budgetMensilePerMese[meseCorrente];
+                budgetMensile = budgetMensilePerMese[chiaveCorrente];
             }
             AggiornaBudgetLabel();
         }

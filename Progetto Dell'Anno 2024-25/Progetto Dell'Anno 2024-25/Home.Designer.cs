@@ -39,9 +39,9 @@ namespace Progetto_Dell_Anno_2024_25
             // 
             this.button_chiudi.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.button_chiudi.BackColor = System.Drawing.Color.Red;
-            this.button_chiudi.Font = new System.Drawing.Font("Showcard Gothic", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_chiudi.Font = new System.Drawing.Font("Showcard Gothic", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button_chiudi.ForeColor = System.Drawing.Color.Black;
-            this.button_chiudi.Location = new System.Drawing.Point(167, 276);
+            this.button_chiudi.Location = new System.Drawing.Point(162, 257);
             this.button_chiudi.Margin = new System.Windows.Forms.Padding(4);
             this.button_chiudi.Name = "button_chiudi";
             this.button_chiudi.Size = new System.Drawing.Size(345, 186);
@@ -55,9 +55,9 @@ namespace Progetto_Dell_Anno_2024_25
             // 
             this.button_Inizio.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.button_Inizio.BackColor = System.Drawing.Color.Lime;
-            this.button_Inizio.Font = new System.Drawing.Font("Showcard Gothic", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_Inizio.Font = new System.Drawing.Font("Showcard Gothic", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button_Inizio.ForeColor = System.Drawing.Color.Black;
-            this.button_Inizio.Location = new System.Drawing.Point(681, 276);
+            this.button_Inizio.Location = new System.Drawing.Point(676, 257);
             this.button_Inizio.Margin = new System.Windows.Forms.Padding(4);
             this.button_Inizio.Name = "button_Inizio";
             this.button_Inizio.Size = new System.Drawing.Size(345, 186);
@@ -71,8 +71,8 @@ namespace Progetto_Dell_Anno_2024_25
             // 
             this.Label_Titolo.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_Titolo.BackColor = System.Drawing.Color.Transparent;
-            this.Label_Titolo.Font = new System.Drawing.Font("Showcard Gothic", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Label_Titolo.Location = new System.Drawing.Point(155, 68);
+            this.Label_Titolo.Font = new System.Drawing.Font("Showcard Gothic", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Label_Titolo.Location = new System.Drawing.Point(152, 0);
             this.Label_Titolo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.Label_Titolo.Name = "Label_Titolo";
             this.Label_Titolo.Size = new System.Drawing.Size(869, 94);
