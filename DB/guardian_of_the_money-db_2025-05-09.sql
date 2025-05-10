@@ -20,7 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `guardian_of_the_money`
 --
-
+CREATE DATABASE IF NOT EXISTS `guardian_of_the_money` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+USE `guardian_of_the_money`;
 -- --------------------------------------------------------
 
 --
