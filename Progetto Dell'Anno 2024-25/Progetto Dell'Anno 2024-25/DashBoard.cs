@@ -474,6 +474,67 @@ namespace Progetto_Dell_Anno_2024_25
         }
         #endregion
 
+        #region BOTTONE CONTROLLA PERIODO GRAFICO A TORTA
+        private void button_ControllaPeriodo_Click(object sender, EventArgs e)
+        {
+            DateTime dataInizio = dateTimePicker_Periodo1.Value.Date;
+            DateTime dataFine = dateTimePicker_Periodo2.Value.Date;
+            if (dataInizio > dataFine)
+            {
+                MessageBox.Show("La data di inizio deve essere precedente alla data di fine!", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            List<Spesa> spesePeriodo = listaSpese
+                .Where(s => s.Data >= dataInizio && s.Data <= dataFine)
+                .ToList();
+            if (spesePeriodo.Count == 0)
+            {
+                MessageBox.Show("Nessuna spesa trovata nel periodo selezionato!", "Attenzione", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            var spesePerCategoria = spesePeriodo
+                .GroupBy(s => s.Categoria)
+                .Select(g => new { Categoria = g.Key, Totale = g.Sum(s => s.Importo) })
+                .OrderByDescending(x => x.Totale)
+                .ToList();
+            decimal totalePeriodo = spesePerCategoria.Sum(x => x.Totale);
+            Series serieCategorie;
+            if (chart_CategorieAnnuali.Series.Count == 0)
+            {
+                serieCategorie = new Series("Spese per Categoria");
+                serieCategorie.ChartType = SeriesChartType.Pie;
+                serieCategorie.IsValueShownAsLabel = true;
+                serieCategorie.Font = new Font("Arial", 8);
+                serieCategorie.Legend = "LegendaCategorie";
+                chart_CategorieAnnuali.Series.Add(serieCategorie);
+            }
+            else
+            {
+                serieCategorie = chart_CategorieAnnuali.Series[0];
+                serieCategorie.Points.Clear();
+            }
+            Color[] colori = new Color[] { Color.SkyBlue, Color.Orange, Color.LightCoral, Color.Green, Color.DeepPink, Color.Aquamarine, Color.Lime, Color.Magenta, Color.Yellow };
+            for (int i = 0; i < spesePerCategoria.Count; i++)
+            {
+                var cat = spesePerCategoria[i];
+                DataPoint punto = new DataPoint();
+                punto.YValues = new double[] { (double)cat.Totale };
+                double percentuale = (double)(cat.Totale / totalePeriodo) * 100;
+                punto.Label = $"{percentuale:0.00}%";
+                punto.LegendText = $"{cat.Categoria}: {cat.Totale:C}";
+                punto.Color = colori[i % colori.Length];
+                serieCategorie.Points.Add(punto);
+            }
+            if (chart_CategorieAnnuali.Titles.Count == 0)
+            {
+                chart_CategorieAnnuali.Titles.Add("Spese per Categoria");
+                chart_CategorieAnnuali.Titles[0].Font = new Font("Arial", 20, FontStyle.Bold);
+            }
+            chart_CategorieAnnuali.Titles[0].Text = $"Spese dal {dataInizio.ToShortDateString()} al {dataFine.ToShortDateString()}";
+            MessageBox.Show("Periodo aggiornato con successo!", "Successo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        #endregion
+
         #region BOTTONE IMPOSTA BUDGET
         private void button_ImpostaBudget_Click(object sender, EventArgs e)
         {
@@ -1125,7 +1186,7 @@ namespace Progetto_Dell_Anno_2024_25
                         ResettaIdAutoIncrement();
                     }
                 }
-                string query = "SELECT id, categoria, importo, data FROM gestore_spese WHERE MONTH(data) = MONTH(CURRENT_DATE()) AND YEAR(data) = YEAR(CURRENT_DATE()) ORDER BY data ASC";
+                string query = "SELECT id, categoria, importo, data FROM gestore_spese ORDER BY data ASC";
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     using (MySqlDataReader reader = cmd.ExecuteReader())
@@ -1178,6 +1239,6 @@ namespace Progetto_Dell_Anno_2024_25
             public string Categoria { get; set; }
             public decimal Importo { get; set; }
             public DateTime Data { get; set; }
-        }
+        }        
     }
 }

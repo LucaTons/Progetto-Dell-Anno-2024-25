@@ -88,6 +88,11 @@
             this.tabPageGrafici = new System.Windows.Forms.TabPage();
             this.chart_ReportAnnuale = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.chart_CategorieAnnuali = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.dateTimePicker_Periodo1 = new System.Windows.Forms.DateTimePicker();
+            this.dateTimePicker_Periodo2 = new System.Windows.Forms.DateTimePicker();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.button_ControllaPeriodo = new System.Windows.Forms.Button();
             this.tabControlOperazioni.SuspendLayout();
             this.tabPageImpostazioni.SuspendLayout();
             this.tabPageAggiungi.SuspendLayout();
@@ -610,6 +615,11 @@
             // 
             // tabPageGrafici
             // 
+            this.tabPageGrafici.Controls.Add(this.button_ControllaPeriodo);
+            this.tabPageGrafici.Controls.Add(this.label11);
+            this.tabPageGrafici.Controls.Add(this.label10);
+            this.tabPageGrafici.Controls.Add(this.dateTimePicker_Periodo2);
+            this.tabPageGrafici.Controls.Add(this.dateTimePicker_Periodo1);
             this.tabPageGrafici.Controls.Add(this.chart_ReportAnnuale);
             this.tabPageGrafici.Controls.Add(this.chart_CategorieAnnuali);
             this.tabPageGrafici.Location = new System.Drawing.Point(4, 25);
@@ -652,11 +662,53 @@
             this.chart_CategorieAnnuali.TabIndex = 10;
             this.chart_CategorieAnnuali.Text = "REPORT ANNUALE";
             // 
+            // dateTimePicker_Periodo1
+            // 
+            this.dateTimePicker_Periodo1.Location = new System.Drawing.Point(271, 773);
+            this.dateTimePicker_Periodo1.Name = "dateTimePicker_Periodo1";
+            this.dateTimePicker_Periodo1.Size = new System.Drawing.Size(250, 22);
+            this.dateTimePicker_Periodo1.TabIndex = 16;
+            // 
+            // dateTimePicker_Periodo2
+            // 
+            this.dateTimePicker_Periodo2.Location = new System.Drawing.Point(271, 842);
+            this.dateTimePicker_Periodo2.Name = "dateTimePicker_Periodo2";
+            this.dateTimePicker_Periodo2.Size = new System.Drawing.Size(250, 22);
+            this.dateTimePicker_Periodo2.TabIndex = 17;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(45, 773);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(200, 21);
+            this.label10.TabIndex = 18;
+            this.label10.Text = "Seleziona la prima data:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(45, 847);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(179, 17);
+            this.label11.TabIndex = 19;
+            this.label11.Text = "Seleziona la seconda data:";
+            // 
+            // button_ControllaPeriodo
+            // 
+            this.button_ControllaPeriodo.Location = new System.Drawing.Point(618, 789);
+            this.button_ControllaPeriodo.Name = "button_ControllaPeriodo";
+            this.button_ControllaPeriodo.Size = new System.Drawing.Size(191, 75);
+            this.button_ControllaPeriodo.TabIndex = 20;
+            this.button_ControllaPeriodo.Text = "CONTROLLA PERIODO";
+            this.button_ControllaPeriodo.UseVisualStyleBackColor = true;
+            this.button_ControllaPeriodo.Click += new System.EventHandler(this.button_ControllaPeriodo_Click);
+            // 
             // DashBoard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1680, 624);
+            this.ClientSize = new System.Drawing.Size(1180, 531);
             this.Controls.Add(this.tabControlOperazioni);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "DashBoard";
@@ -674,6 +726,7 @@
             this.tabPage_ReportAnnuale.ResumeLayout(false);
             this.tabPage_ReportAnnuale.PerformLayout();
             this.tabPageGrafici.ResumeLayout(false);
+            this.tabPageGrafici.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart_ReportAnnuale)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart_CategorieAnnuali)).EndInit();
             this.ResumeLayout(false);
@@ -734,5 +787,10 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.DateTimePicker dateTimePicker_Periodo2;
+        private System.Windows.Forms.DateTimePicker dateTimePicker_Periodo1;
+        private System.Windows.Forms.Button button_ControllaPeriodo;
     }
 }
